@@ -1,0 +1,34 @@
+{
+  "name": "ToxiGuard — Aide décisionnelle en toxicologie",
+  "short_name": "ToxiGuard",
+  "description": "Outil d'aide décisionnelle pour la prise en charge des intoxications aiguës en médecine d'urgence et réanimation",
+  "lang": "fr-FR",
+  "dir": "ltr",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "theme_color": "#1a3a5c",
+  "background_color": "#0c0f1a",
+  "categories": ["medical", "health", "education", "productivity"],
+  "icons": [
+    {
+      "src": "data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20200%20200%22%3E%3Cpath%20d%3D%22M100%2010%20L186%2046%20L186%20116%20Q186%20172%20100%20196%20Q14%20172%2014%20116%20L14%2046%20Z%22%20fill%3D%22%231a4a6e%22%2F%3E%3Cpath%20d%3D%22M100%2022%20L174%2054%20L174%20114%20Q174%20162%20100%20184%20Q26%20162%2026%20114%20L26%2054%20Z%22%20fill%3D%22none%22%20stroke%3D%22%23fff%22%20stroke-width%3D%224%22%2F%3E%3Cpath%20d%3D%22M100%2034%20L162%2062%20L162%20113%20Q162%20154%20100%20174%20Q38%20154%2038%20113%20L38%2062%20Z%22%20fill%3D%22%233dd0b8%22%2F%3E%3Crect%20x%3D%2276%22%20y%3D%22104%22%20width%3D%2248%22%20height%3D%2216%22%20rx%3D%222%22%20fill%3D%22%230d2d4f%22%2F%3E%3Crect%20x%3D%2292%22%20y%3D%2288%22%20width%3D%2216%22%20height%3D%2248%22%20rx%3D%222%22%20fill%3D%22%230d2d4f%22%2F%3E%3C%2Fsvg%3E",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20200%20200%22%3E%3Crect%20width%3D%22200%22%20height%3D%22200%22%20fill%3D%22%231a3a5c%22%2F%3E%3Cpath%20d%3D%22M100%2030%20L160%2056%20L160%20104%20Q160%20148%20100%20168%20Q40%20148%2040%20104%20L40%2056%20Z%22%20fill%3D%22%233dd0b8%22%2F%3E%3Crect%20x%3D%2284%22%20y%3D%22102%22%20width%3D%2232%22%20height%3D%2212%22%20rx%3D%222%22%20fill%3D%22%230d2d4f%22%2F%3E%3Crect%20x%3D%2294%22%20y%3D%2292%22%20width%3D%2212%22%20height%3D%2232%22%20rx%3D%222%22%20fill%3D%22%230d2d4f%22%2F%3E%3C%2Fsvg%3E",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {"name":"Molécules","short_name":"Molécules","description":"Liste des molécules toxiques","url":"./index.html"},
+    {"name":"Algorithmes","short_name":"Algos","description":"Flowcharts décisionnels","url":"./index.html"},
+    {"name":"Patient","short_name":"Patient","description":"Simulateur clinique","url":"./index.html"},
+    {"name":"Outils","short_name":"Outils","description":"Calculateurs cliniques","url":"./index.html"}
+  ]
+}

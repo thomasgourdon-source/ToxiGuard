@@ -1,21 +1,38 @@
-MIT License
+ToxiGuard — Aide décisionnelle en toxicologie d'urgence
 
-Copyright (c) 2026 thomasgourdon-source
+Copyright (c) 2026 Dr Thomas Gourdon (médecin urgentiste)
+                  Claude AI (Anthropic)
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+Ce projet est mis à disposition sous licence
+Creative Commons Attribution - Pas d'Utilisation Commerciale - Partage
+dans les Mêmes Conditions 4.0 International (CC BY-NC-SA 4.0).
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+Pour consulter le texte intégral de la licence, voir :
+https://creativecommons.org/licenses/by-nc-sa/4.0/deed.fr
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+Résumé des conditions :
+
+  ATTRIBUTION (BY)
+  Vous devez créditer les auteurs originaux (Dr Thomas Gourdon et Claude AI),
+  indiquer si des modifications ont été apportées et inclure un lien vers
+  la licence.
+
+  PAS D'UTILISATION COMMERCIALE (NC)
+  Vous n'êtes pas autorisé à faire un usage commercial de ce projet,
+  ni de tout ou partie du matériel le composant.
+
+  PARTAGE DANS LES MÊMES CONDITIONS (SA)
+  Dans le cas où vous remixez, transformez, ou créez à partir du
+  matériel composant cet projet, vous devez diffuser votre contribution
+  sous la même licence que l'original.
+
+Pour tout usage commercial, contactez les auteurs.
+
+AVERTISSEMENT MÉDICAL :
+ToxiGuard est un outil pédagogique d'aide à la décision destiné aux
+professionnels de santé. Il ne remplace ni l'évaluation clinique d'un
+médecin, ni l'avis du Centre Antipoison (CAPTV), ni les recommandations
+officielles (SFMU, SRLF, ANSES, HAS). L'utilisateur reste seul
+responsable de toute décision diagnostique ou thérapeutique. Les
+auteurs déclinent toute responsabilité quant à l'usage clinique de
+cet outil.

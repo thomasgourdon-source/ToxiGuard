@@ -1,0 +1,1222 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ToxiGuard — Aide décisionnelle intoxications aiguës</title>
+<style>
+:root{--bg:#f5f5f5;--card:#fff;--accent:#e94560;--sec:#eef2f7;--txt:#1a1a2e;--border:#dde3ea;--green:#2b8a3e;--yellow:#e67700;--orange:#d9480f;--blue:#1864ab;--purple:#862e9c;--teal:#0b7285;--r:16px;--header-bg:#1a3a5c;--header-txt:#f5f5f5;--nav-bg:#eef2f7;--nav-active:#1a3a5c;--nav-active-txt:#fff;--badge-bg:#e0e7ef;--modal-bg:#fff;--modal-txt:#1a1a2e;--input-bg:#fff;--input-border:#c4cdd8;--shadow:0 2px 12px rgba(0,0,0,.06);--cat-bg:#e0e7ef;--cat-active:#1a3a5c;--cat-active-txt:#fff;--sel-bg:#1a3a5c;--sel-txt:#fff;--tool-bg:#f8fafc;--tool-border:#dde3ea;--grave-bg:#fde8e8;--grave-txt:#c92a2a;--toggle-bg:#d0d8e0;--gap:20px;--card-pad:24px}
+[data-theme="dark"]{--bg:#0a0a1a;--card:#141428;--accent:#e94560;--sec:#16213e;--txt:#e8e8f0;--border:#252548;--green:#51cf66;--yellow:#ffd43b;--orange:#ff922b;--blue:#748ffc;--purple:#cc5de8;--teal:#0abde3;--header-bg:#0d1b2e;--header-txt:#e8e8f0;--nav-bg:#16213e;--nav-active:#e94560;--nav-active-txt:#fff;--badge-bg:#252548;--modal-bg:#141428;--modal-txt:#e8e8f0;--input-bg:#16213e;--input-border:#252548;--shadow:0 2px 16px rgba(0,0,0,.35);--cat-bg:#1a1a3a;--cat-active:#e94560;--cat-active-txt:#fff;--sel-bg:#e94560;--sel-txt:#fff;--tool-bg:#16213e;--tool-border:#252548;--grave-bg:rgba(233,69,96,.12);--grave-txt:#ff6b6b;--toggle-bg:#252548}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;transition:background .3s,color .3s;line-height:1.6}
+#app{max-width:1200px;margin:0 auto;padding:0 24px 140px}
+header{background:var(--header-bg);color:var(--header-txt);padding:24px 32px;border-radius:0 0 var(--r) var(--r);display:flex;align-items:center;justify-content:space-between;gap:20px;margin-bottom:24px;position:relative}
+.logo-area{display:flex;align-items:center;gap:16px}
+.logo-area h1{font-size:1.7rem;font-weight:700;letter-spacing:-.5px}
+.logo-area .subtitle{font-size:.72rem;opacity:.6;display:block;margin-top:2px;letter-spacing:.5px}
+.logo-light,.logo-dark{display:none}
+:root .logo-light{display:block} :root .logo-dark{display:none}
+[data-theme="dark"] .logo-light{display:none} [data-theme="dark"] .logo-dark{display:block}
+.header-controls{display:flex;align-items:center;gap:14px}
+.theme-toggle{background:var(--toggle-bg);border:none;border-radius:24px;padding:10px 16px;cursor:pointer;font-size:1.15rem;color:var(--header-txt);display:flex;align-items:center;gap:8px;transition:background .3s}
+.theme-toggle:hover{opacity:.8}
+.version-badge{font-size:.62rem;opacity:.35;position:absolute;bottom:6px;right:14px}
+nav#tabs{display:flex;gap:10px;background:var(--nav-bg);padding:10px;border-radius:var(--r);margin-bottom:24px;overflow-x:auto;transition:background .3s}
+nav#tabs button{flex:1;padding:14px 12px;border:none;border-radius:12px;cursor:pointer;font-size:.9rem;font-weight:600;background:transparent;color:var(--txt);transition:all .25s;white-space:nowrap}
+nav#tabs button.active{background:var(--nav-active);color:var(--nav-active-txt);box-shadow:0 2px 8px rgba(0,0,0,.15)}
+nav#tabs button:hover:not(.active){background:rgba(0,0,0,.05)}
+[data-theme="dark"] nav#tabs button:hover:not(.active){background:rgba(255,255,255,.06)}
+#toolbar{display:flex;gap:12px;margin-bottom:24px;flex-wrap:wrap}
+#toolbar input{flex:1;min-width:240px;padding:14px 20px;border-radius:var(--r);border:1px solid var(--input-border);font-size:.95rem;background:var(--input-bg);color:var(--txt);transition:all .3s}
+#toolbar input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(233,69,96,.12)}
+#cats{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+#cats button{padding:9px 18px;border-radius:24px;border:1px solid var(--border);background:var(--cat-bg);color:var(--txt);cursor:pointer;font-size:.82rem;transition:all .25s;font-weight:500}
+#cats button.active{background:var(--cat-active);color:var(--cat-active-txt);border-color:var(--cat-active)}
+#cats button:hover:not(.active){border-color:var(--accent)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:var(--gap)}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:var(--card-pad);cursor:pointer;transition:all .25s;box-shadow:var(--shadow);position:relative}
+.card:hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 8px 24px rgba(233,69,96,.1)}
+.card h3{font-size:1.08rem;margin-bottom:10px;color:var(--accent)}
+.card .aliases{font-size:.78rem;opacity:.55;margin-bottom:12px;line-height:1.5}
+.card .class-badge{display:inline-block;padding:4px 12px;border-radius:14px;font-size:.72rem;margin-bottom:10px;font-weight:600;color:#fff}
+.tox-badges{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.tox-badge{padding:4px 12px;border-radius:14px;font-size:.68rem;font-weight:600;color:#fff}
+.sel-badge{position:absolute;top:12px;right:12px;width:26px;height:26px;border-radius:50%;background:var(--sel-bg);color:var(--sel-txt);display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700}
+#sel-bar{position:fixed;bottom:0;left:0;right:0;background:var(--sel-bg);color:var(--sel-txt);padding:16px 28px;display:none;align-items:center;justify-content:space-between;z-index:100;box-shadow:0 -4px 20px rgba(0,0,0,.25)}
+#sel-bar.show{display:flex}
+#sel-bar button{background:rgba(255,255,255,.2);color:inherit;border:none;padding:10px 20px;border-radius:10px;cursor:pointer;font-size:.88rem;font-weight:500;transition:background .2s}
+#sel-bar button:hover{background:rgba(255,255,255,.3)}
+#int-panel{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:var(--card-pad);margin-bottom:var(--gap);display:none;box-shadow:var(--shadow)}
+#int-panel.show{display:block}
+#int-panel h3{color:var(--accent);margin-bottom:16px;font-size:1.1rem}
+.int-item{padding:14px 16px;border-radius:12px;margin-bottom:10px;font-size:.9rem;line-height:1.6}
+.int-critique{background:var(--grave-bg);border-left:4px solid var(--accent)}
+.int-majeure{background:rgba(255,146,43,.1);border-left:4px solid var(--orange)}
+.int-moderee{background:rgba(255,212,59,.08);border-left:4px solid var(--yellow)}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;display:none;align-items:center;justify-content:center;padding:24px;backdrop-filter:blur(6px)}
+.modal-overlay.show{display:flex}
+#modal-body{background:var(--modal-bg);color:var(--modal-txt);border-radius:var(--r);padding:32px;max-width:760px;width:100%;max-height:85vh;overflow-y:auto;position:relative;box-shadow:0 16px 48px rgba(0,0,0,.25)}
+#modal-body .close-btn{position:sticky;top:0;float:right;background:var(--accent);color:#fff;border:none;width:36px;height:36px;border-radius:50%;cursor:pointer;font-size:1.15rem;z-index:10;transition:transform .2s}
+#modal-body .close-btn:hover{transform:scale(1.1)}
+#modal-body h2{color:var(--accent);margin-bottom:18px;padding-right:48px;font-size:1.35rem}
+#modal-body h4{margin:22px 0 10px;color:var(--blue);font-size:.98rem}
+#modal-body ul{padding-left:24px;margin-bottom:14px}
+#modal-body li{margin-bottom:8px;font-size:.9rem;line-height:1.7}
+#modal-body .grave{color:var(--grave-txt);font-weight:600}
+.physio-box{background:var(--tool-bg);border:1px solid var(--tool-border);border-radius:12px;padding:18px;margin:14px 0;font-size:.9rem;line-height:1.8}
+.dose-box{display:inline-block;background:var(--grave-bg);color:var(--grave-txt);padding:8px 18px;border-radius:12px;font-weight:600;font-size:.9rem;margin:10px 0}
+.pk-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0}
+.pk-item{background:var(--tool-bg);border-radius:12px;padding:14px 16px;font-size:.9rem;border:1px solid var(--tool-border)}
+.pk-item strong{color:var(--blue);display:block;font-size:.78rem;margin-bottom:4px}
+.tool-section{background:var(--tool-bg);border:1px solid var(--tool-border);border-radius:var(--r);padding:28px;margin-bottom:24px}
+.tool-section h3{color:var(--accent);margin-bottom:18px;font-size:1.15rem}
+.tool-section label{display:block;margin-bottom:8px;font-size:.9rem;font-weight:600}
+.tool-section input,.tool-section select{width:100%;padding:12px 16px;border-radius:12px;border:1px solid var(--input-border);font-size:.92rem;margin-bottom:16px;background:var(--input-bg);color:var(--txt);transition:border .2s}
+.tool-section input:focus,.tool-section select:focus{outline:none;border-color:var(--accent)}
+.tool-section button{background:var(--accent);color:#fff;border:none;padding:12px 24px;border-radius:12px;cursor:pointer;font-size:.92rem;margin:4px;font-weight:600;transition:opacity .2s}
+.tool-section button:hover{opacity:.85}
+.tool-result{margin-top:18px;padding:18px;border-radius:12px;background:var(--card);border:1px solid var(--border);font-size:.92rem;line-height:1.7}
+.canvas-wrap{background:var(--card);border-radius:12px;padding:20px;text-align:center;border:1px solid var(--border);overflow-x:auto}
+.patient-view{margin-top:20px}
+.patient-toggle{display:flex;gap:10px;margin-bottom:20px}
+.patient-toggle button{padding:12px 24px;border-radius:12px;border:1px solid var(--border);background:var(--cat-bg);color:var(--txt);cursor:pointer;font-weight:600;font-size:.9rem;transition:all .25s}
+.patient-toggle button.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.timeline-phase{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:22px;margin-bottom:18px;box-shadow:var(--shadow)}
+.timeline-phase h4{margin-bottom:12px;display:flex;align-items:center;gap:12px;font-size:1.02rem}
+.timeline-dot{width:16px;height:16px;border-radius:50%;display:inline-block}
+.rapid-section{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:22px;margin-bottom:18px;box-shadow:var(--shadow)}
+.rapid-section h4{color:var(--blue);margin-bottom:12px}
+.rapid-section li{margin-bottom:6px;font-size:.9rem;line-height:1.6}
+.glasgow-row{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.glasgow-btn{padding:10px 14px;border-radius:12px;border:1px solid var(--border);background:var(--cat-bg);color:var(--txt);cursor:pointer;font-size:.82rem;transition:all .2s;flex:1;text-align:center;min-width:0}
+.glasgow-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.glasgow-total{font-size:2.4rem;font-weight:700;color:var(--accent);text-align:center;margin:20px 0}
+.pss-organ-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin-top:14px}
+.pss-organ-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px;text-align:center;cursor:pointer;transition:all .25s}
+.pss-organ-card:hover{border-color:var(--accent)}
+.pss-organ-card.selected{border-color:var(--accent);box-shadow:0 0 0 3px rgba(233,69,96,.15)}
+.pss-organ-card h5{margin-bottom:8px;font-size:.9rem}
+.pss-score-display{font-size:2rem;font-weight:700;margin:8px 0}
+.tools-menu{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;margin-bottom:24px}
+.tool-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:20px;cursor:pointer;text-align:center;transition:all .25s;box-shadow:var(--shadow)}
+.tool-card:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:0 6px 20px rgba(233,69,96,.1)}
+.tool-card.active{border-color:var(--accent);background:var(--sec)}
+.tool-card .tool-icon{font-size:2rem;margin-bottom:10px}
+.tool-card .tool-name{font-size:.88rem;font-weight:600}
+.tool-back{background:none;border:1px solid var(--border);color:var(--txt);padding:10px 20px;border-radius:12px;cursor:pointer;font-size:.88rem;margin-bottom:20px;transition:all .2s}
+.tool-back:hover{border-color:var(--accent);color:var(--accent)}
+@media(max-width:600px){
+ header{flex-direction:column;text-align:center;padding:20px}
+ .grid{grid-template-columns:1fr}
+ .pk-grid{grid-template-columns:1fr}
+ #toolbar{flex-direction:column}
+ nav#tabs{flex-wrap:wrap}
+ nav#tabs button{flex:0 0 auto}
+ .pss-organ-grid{grid-template-columns:1fr 1fr}
+ .tools-menu{grid-template-columns:1fr 1fr}
+ #app{padding:0 14px 120px}
+}
+</style></head><body>
+<div id="app">
+<header>
+<div class="logo-area">
+<!-- Logo CLAIR (jaune/corail) fidèle au design Gemini -->
+<svg class="logo-light" width="52" height="52" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+ <defs>
+  <linearGradient id="soL" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#e8856e"/><stop offset="100%" stop-color="#d96850"/></linearGradient>
+  <linearGradient id="siL" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#f7c948"/><stop offset="100%" stop-color="#e6a820"/></linearGradient>
+ </defs>
+ <path d="M100 10 L186 52 L186 124 Q186 174 100 196 Q14 174 14 124 L14 52 Z" fill="url(#soL)"/>
+ <path d="M100 22 L176 58 L176 120 Q176 166 100 185 Q24 166 24 120 L24 58 Z" fill="none" stroke="#fff" stroke-width="3.5" opacity=".55"/>
+ <path d="M100 30 L170 62 L170 117 Q170 160 100 178 Q30 160 30 117 L30 62 Z" fill="url(#siL)"/>
+ <line x1="100" y1="62" x2="100" y2="178" stroke="#c8942a" stroke-width="1.5" opacity=".18"/>
+ <rect x="78" y="98" width="44" height="13" rx="3" fill="#b84a35" opacity=".85"/>
+ <rect x="94" y="82" width="13" height="44" rx="3" fill="#b84a35" opacity=".85"/>
+ <path d="M107 88 Q107 62 92 52 Q82 46 74 52 Q66 58 68 68 Q70 78 84 84 Z" fill="#b84a35" opacity=".85"/>
+ <ellipse cx="78" cy="55" rx="6" ry="7" fill="#b84a35" opacity=".85"/>
+ <circle cx="76" cy="53" r="2.5" fill="#fff"/>
+ <circle cx="75.5" cy="53.5" r="1.2" fill="#333"/>
+ <path d="M72 58 L66 62 M72 58 L67 55" stroke="#b84a35" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+</svg>
+<!-- Logo SOMBRE (bleu/teal) fidèle au design Gemini -->
+<svg class="logo-dark" width="52" height="52" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+ <defs>
+  <linearGradient id="soD" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#1a5276"/><stop offset="100%" stop-color="#0e3d5c"/></linearGradient>
+  <linearGradient id="siD" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#45c6ad"/><stop offset="100%" stop-color="#1abc9c"/></linearGradient>
+ </defs>
+ <path d="M100 10 L186 52 L186 124 Q186 174 100 196 Q14 174 14 124 L14 52 Z" fill="url(#soD)"/>
+ <path d="M100 22 L176 58 L176 120 Q176 166 100 185 Q24 166 24 120 L24 58 Z" fill="none" stroke="#fff" stroke-width="3.5" opacity=".3"/>
+ <path d="M100 30 L170 62 L170 117 Q170 160 100 178 Q30 160 30 117 L30 62 Z" fill="url(#siD)"/>
+ <line x1="100" y1="62" x2="100" y2="178" stroke="#2e86ab" stroke-width="1.5" opacity=".18"/>
+ <rect x="78" y="98" width="44" height="13" rx="3" fill="#0d4a5a" opacity=".85"/>
+ <rect x="94" y="82" width="13" height="44" rx="3" fill="#0d4a5a" opacity=".85"/>
+ <path d="M107 88 Q107 62 92 52 Q82 46 74 52 Q66 58 68 68 Q70 78 84 84 Z" fill="#0d4a5a" opacity=".85"/>
+ <ellipse cx="78" cy="55" rx="6" ry="7" fill="#0d4a5a" opacity=".85"/>
+ <circle cx="76" cy="53" r="2.5" fill="#fff"/>
+ <circle cx="75.5" cy="53.5" r="1.2" fill="#0a0a1a"/>
+ <path d="M72 58 L66 62 M72 58 L67 55" stroke="#0d4a5a" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+</svg>
+<div><h1>ToxiGuard</h1><span class="subtitle">AIDE DÉCISIONNELLE EN TOXICOLOGIE</span></div>
+</div>
+<div class="header-controls">
+<button class="theme-toggle" onclick="toggleTheme()" title="Changer de thème">🌙</button>
+</div>
+</header>
+<nav id="tabs"></nav>
+<div id="toolbar"><input type="text" id="search" placeholder="🔍 Rechercher molécule, symptôme, classe..." oninput="onSearch(this.value)"><div id="cats"></div></div>
+<main>
+<div id="int-panel"></div>
+<div id="mol-grid" class="grid"></div>
+<div id="tox-grid" class="grid"></div>
+<div id="ant-grid" class="grid"></div>
+<div id="patient-content"></div>
+<div id="outils-content"></div>
+</main>
+<div id="sel-bar"></div>
+<div class="modal-overlay" id="modal-overlay" onclick="if(event.target===this)closeD()"><div id="modal-body"></div></div>
+</div>
+<span class="version-badge">v2.4</span>
+<script>
+// === THEME ===
+function getPreferredTheme(){const s=localStorage.getItem('tg-theme');if(s)return s;return window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light'}
+function applyTheme(t){document.documentElement.setAttribute('data-theme',t);document.querySelector('.theme-toggle').textContent=t==='dark'?'☀️':'🌙';localStorage.setItem('tg-theme',t)}
+function toggleTheme(){applyTheme(getPreferredTheme()==='dark'?'light':'dark');if(currentTab==='outils'&&currentTool==='rumack')setTimeout(drawRumackCanvas,50)}
+applyTheme(getPreferredTheme());
+
+// === STATE ===
+const defined_tabs=[{id:"molecules",label:"Molécules",icon:"💊"},{id:"toxidromes",label:"Toxidromes",icon:"⚠️"},{id:"antidotes",label:"Antidotes",icon:"💉"},{id:"patient",label:"Patient",icon:"🩺"},{id:"outils",label:"Outils",icon:"🔧"}];
+let currentTab="molecules",currentCat="all",selected=[],searchQ="",patientView="rapid",currentTool=null;
+const toxColors={anticholinergique:"#e94560",cholinergique:"#51cf66",serotoninergique:"#cc5de8",opioide:"#748ffc",sympathomimetique:"#ff922b",esm:"#ffd43b",smn:"#0abde3"};
+// Couleurs par classe thérapeutique
+const classColors={"Antalgique":"#4dabf7","Anxiolytique/Sédatif":"#5c7cfa","Antidépresseur":"#9775fa","Antidépresseur tricyclique":"#845ef7","Antiarythmique/Antihypertenseur":"#f06595","Antihypertenseur":"#e64980","Thymorégulateur":"#20c997","Gaz toxique":"#868e96","Antipaludéen":"#38d9a9","Antiarythmique Ic":"#f76707","Antiépileptique":"#fd7e14","AINS/Antalgique":"#fab005","Anticholinestérasique":"#82c91e","Supplément martial":"#e67700","Anti-goutteux":"#da77f2","Anticoagulant":"#c92a2a","Antidiabétique":"#15aabf","Stimulant":"#ff6b6b","Cannabinoïde":"#a9e34b","Alcool":"#fcc419","Antipsychotique":"#4c6ef5","Antalgique palier 2":"#339af0","Poison cellulaire":"#f03e3e","Mycotoxines":"#be4bdb","Digitalique":"#d6336c"};
+
+// === MOLECULES (28) ===
+const molecules=[
+{id:"paracetamol",name:"Paracétamol",aliases:["Doliprane","Efferalgan","Dafalgan","acétaminophène","APAP"],class:"Antalgique",category:"Médicaments",toxidrome:[],
+physiopath:"Saturation des voies de conjugaison hépatique (glucuro/sulfoconjugaison) → accumulation de NAPQI (métabolite toxique via CYP2E1) → déplétion en glutathion → nécrose hépatocellulaire centrolobulaire.",
+doseT:"Toxique >150 mg/kg ou >10g adulte (>75mg/kg si FdR: dénutrition, alcoolisme, inducteurs enzymatiques)",demiVie:"2-4h (allongée si surdosage)",picPlasma:"30min-2h (retardé si LP ou co-ingestion)",
+signes:[{t:"Phase 1 (0-24h): nausées, vomissements, douleurs abdominales, asymptomatique possible",g:0},{t:"Phase 2 (24-72h): cytolyse hépatique, douleur hypochondre droit",g:0},{t:"Phase 3 (72-96h): insuffisance hépatique aiguë, encéphalopathie, coagulopathie (TP<30%), acidose lactique",g:1},{t:"Insuffisance rénale aiguë (nécrose tubulaire)",g:1},{t:"Hypoglycémie sévère",g:1},{t:"Pancréatite aiguë (rare)",g:0}],
+traitement:["Charbon activé si <2h post-ingestion (1g/kg)","N-acétylcystéine (NAC): protocole Prescott IV 300mg/kg sur 21h (150mg/kg en 1h, 50mg/kg en 4h, 100mg/kg en 16h)","Nomogramme de Rumack-Matthew pour décision de traitement","Si insuffisance hépatique fulminante: transplantation hépatique (critères de Clichy)"],
+surveillance:["Paracétamolémie à H4 (ou dès admission si >4h)","ASAT/ALAT, TP/INR toutes les 12h","Créatinine, glycémie, lactates","Facteur V si hépatite sévère"],
+sortie:["Paracétamolémie sous la ligne de traitement","Transaminases normales à 24h","Absence de symptômes","TP/INR normal","Évaluation psychiatrique si volontaire"]},
+{id:"benzodiazepines",name:"Benzodiazépines",aliases:["Valium","Lexomil","Xanax","Temesta","Rivotril","diazépam","bromazépam","alprazolam","lorazépam","clonazépam","oxazépam","Seresta","Lysanxia","midazolam"],class:"Anxiolytique/Sédatif",category:"Médicaments",toxidrome:["opioide"],
+physiopath:"Potentialisation GABA-A → augmentation fréquence ouverture canal Cl⁻ → hyperpolarisation neuronale → dépression SNC.",
+doseT:"Large marge thérapeutique. Danger majeur en association (alcool, opioïdes).",demiVie:"Variable: alprazolam 6-12h, diazépam 20-100h, midazolam 1.5-2.5h",picPlasma:"30min-2h PO",
+signes:[{t:"Somnolence, confusion, dysarthrie",g:0},{t:"Ataxie, hypotonie",g:0},{t:"Coma calme hypotonique",g:1},{t:"Dépression respiratoire (surtout si co-ingestion)",g:1},{t:"Hypotension modérée",g:0}],
+traitement:["Support des fonctions vitales","Flumazénil (Anexate) 0.2mg IV, titration par 0.1mg (max 2mg) — CI si co-ingestion tricycliques/convulsivants/dépendance BZD","Charbon activé si <1h","Intubation si dépression respiratoire sévère"],
+surveillance:["Conscience (Glasgow) horaire","FR, SpO2, PA","ECG si co-ingestion suspectée"],
+sortie:["Glasgow 15 stable >6h","FR >12, SpO2 >95%","Absence de co-intoxication","Évaluation psychiatrique si volontaire"]},
+{id:"isrs",name:"ISRS / IRSNa",aliases:["Prozac","Seroplex","Zoloft","Deroxat","Effexor","fluoxétine","sertraline","paroxétine","escitalopram","citalopram","venlafaxine","duloxétine","fluvoxamine"],class:"Antidépresseur",category:"Médicaments",toxidrome:["serotoninergique"],
+physiopath:"Inhibition recapture 5-HT → accumulation synaptique. À forte dose: syndrome sérotoninergique. IRSNa: + inhibition recapture NA.",
+doseT:"Citalopram/escitalopram: QT long >600mg. Venlafaxine: convulsions >1500mg, cardiotoxicité >3g",demiVie:"Fluoxétine 1-4j, sertraline 26h, venlafaxine 5h",picPlasma:"2-8h",
+signes:[{t:"Nausées, vomissements, diarrhée",g:0},{t:"Agitation, tremblements, myoclonies",g:0},{t:"Syndrome sérotoninergique: hyperthermie, rigidité, clonus, confusion",g:1},{t:"Convulsions (surtout venlafaxine)",g:1},{t:"Allongement QT, torsade de pointes (citalopram)",g:1},{t:"Tachycardie sinusale",g:0}],
+traitement:["Charbon activé si <2h","BZD pour agitation/convulsions","Cyproheptadine 12mg puis 4mg/4h si syndrome sérotoninergique","Refroidissement si hyperthermie","Magnésium IV si QT long","Bicarbonates si QRS larges (venlafaxine)"],
+surveillance:["ECG continu (QT, QRS)","Température horaire","CPK si hyperthermie","Ionogramme, créatinine"],
+sortie:["ECG normal à H12-24","Absence de syndrome sérotoninergique","Stabilité neurologique 12h","Évaluation psychiatrique"]},
+{id:"betabloquants",name:"Bêtabloquants",aliases:["Avlocardyl","Ténormine","Sectral","Lopressor","propranolol","aténolol","acébutolol","métoprolol","bisoprolol","sotalol","labétalol","carvédilol"],class:"Antiarythmique/Antihypertenseur",category:"Cardiotropes",toxidrome:[],
+physiopath:"Blocage β1 (chronotrope/inotrope négatif) et β2. Propranolol: ESM (blocage Na+). Sotalol: QT long (blocage K+).",
+doseT:"Propranolol >1g = potentiellement létal. Sotalol: toxicité à 2-3x dose thérapeutique",demiVie:"Propranolol 3-6h, aténolol 6-9h, sotalol 12h",picPlasma:"1-4h",
+signes:[{t:"Bradycardie sinusale, BAV",g:1},{t:"Hypotension, choc cardiogénique",g:1},{t:"Hypoglycémie masquée",g:1},{t:"Bronchospasme",g:0},{t:"Convulsions, coma (propranolol — ESM)",g:1},{t:"QRS larges (propranolol), QT long (sotalol)",g:1},{t:"Torsade de pointes (sotalol)",g:1}],
+traitement:["Atropine 0.5-1mg IV","Glucagon 5-10mg IV bolus puis 2-5mg/h","HET: insuline 1UI/kg bolus puis 0.5-1UI/kg/h + G10%","Catécholamines: isoprénaline, adrénaline","Intralipide 20% si choc réfractaire (propranolol)","EES si bradycardie réfractaire","Bicarbonates si QRS larges","Magnésium si TdP (sotalol)"],
+surveillance:["ECG continu","PA invasive si choc","Glycémie horaire","Lactates, GDS"],
+sortie:["FC >60, PA normale 24h","ECG normal","Glycémie stable","Asymptomatique 24h"]},
+{id:"inhibiteurs_calciques",name:"Inhibiteurs calciques",aliases:["Loxen","Adalate","Isoptine","Amlor","nicardipine","nifédipine","vérapamil","diltiazem","amlodipine"],class:"Antihypertenseur",category:"Cardiotropes",toxidrome:[],
+physiopath:"Blocage canaux Ca L → vasodilatation (DHP) ou dépression conduction/contractilité (vérapamil, diltiazem).",
+doseT:"Vérapamil/diltiazem: létal dès 2-3x dose thérapeutique. Amlodipine >0.3mg/kg",demiVie:"Vérapamil 6-8h, diltiazem 3-6h, amlodipine 30-50h",picPlasma:"1-4h (LP: 6-12h)",
+signes:[{t:"Bradycardie sévère, BAV (vérapamil/diltiazem)",g:1},{t:"Hypotension sévère, choc vasoplégique",g:1},{t:"Hyperglycémie",g:0},{t:"Acidose lactique",g:1},{t:"OAP non cardiogénique",g:1},{t:"Ischémie mésentérique",g:1}],
+traitement:["Calcium IV: gluconate Ca 30-60ml ou chlorure Ca 10-20ml","HET: insuline 1UI/kg puis 1-10UI/kg/h + G10-30%","Catécholamines","Glucagon 5mg IV","Intralipide 20%","ECMO si réfractaire","Charbon activé si <2h","Irrigation intestinale si LP"],
+surveillance:["ECG continu","PA invasive","Glycémie horaire","Lactates, GDS","Échocardiographie si choc"],
+sortie:["Hémodynamique stable 24h","ECG normal","Glycémie stable","LP: surveillance 24-48h"]},
+{id:"lithium",name:"Lithium",aliases:["Téralithe","carbonate de lithium"],class:"Thymorégulateur",category:"Médicaments",toxidrome:[],
+physiopath:"Ion interférant avec Na+, 5-HT, DA. Élimination rénale pure. Index thérapeutique étroit (0.6-1.2 mEq/L).",
+doseT:"Lithémie >1.5 (risque), >2.5 (sévère), >3.5 (vital). Chronique plus grave qu'aiguë à lithémie égale.",demiVie:"18-36h",picPlasma:"2-4h (LP: 4-6h)",
+signes:[{t:"Tremblements, fasciculations, hyperréflexie",g:0},{t:"Nausées, vomissements, diarrhée",g:0},{t:"Confusion, somnolence, dysarthrie",g:0},{t:"Convulsions",g:1},{t:"Coma, myoclonies",g:1},{t:"IRA (diabète insipide néphrogénique)",g:1},{t:"Bradycardie, BAV, onde T aplatie",g:1},{t:"SILENT",g:1}],
+traitement:["Hydratation IV (NaCl 0.9%, 200-300ml/h)","Hémodialyse si >4 mEq/L, ou >2.5 + signes neuro, ou IR","PAS de charbon activé","Irrigation intestinale si ingestion massive"],
+surveillance:["Lithémie /4-6h","Créatinine, ionogramme","ECG","Diurèse horaire","Neuro répété"],
+sortie:["Lithémie <1.5 en décroissance","Fonction rénale normale","Absence signes neuro","Réévaluation traitement"]},
+{id:"co",name:"Monoxyde de carbone",aliases:["CO","intoxication au CO","gaz","fumées d'incendie"],class:"Gaz toxique",category:"Toxiques environnementaux",toxidrome:[],
+physiopath:"Affinité Hb 240x > O2 → HbCO → hypoxie tissulaire. Blocage cytochrome oxydase. Stress oxydatif → toxicité neuro retardée.",
+doseT:"HbCO >3% (NF), >10% (F). >25% symptomatique, >50-60% létal",demiVie:"HbCO: 320min air, 90min O2 100%, 23min OHB 3ATA",picPlasma:"Immédiat",
+signes:[{t:"Céphalées, vertiges, nausées",g:0},{t:"Confusion, troubles visuels, ataxie",g:0},{t:"PCI, coma",g:1},{t:"Convulsions",g:1},{t:"SCA, troubles du rythme",g:1},{t:"OAP lésionnel (fumées)",g:1},{t:"Syndrome post-intervallaire (2-40j)",g:1},{t:"Teinte cochenille (tardif)",g:0}],
+traitement:["O2 100% MHC","OHB si: coma, PCI, grossesse, HbCO >25%, signes neuro/cardiaques","Traitement symptomatique"],
+surveillance:["HbCO /4h","ECG, troponine","GDS, lactates","Neuro répété","Scanner si signes neuro"],
+sortie:["HbCO <3%","Asymptomatique >6h","ECG normal, troponine négative","Info syndrome post-intervallaire","Sécurisation domicile"]},
+{id:"digoxine",name:"Digoxine",aliases:["Digoxine","digitale","digitaliques","laurier rose","muguet"],class:"Digitalique",category:"Cardiotropes",toxidrome:[],
+physiopath:"Inhibition Na+/K+-ATPase → surcharge Ca²+ IC → hyperexcitabilité + BAV. Hyperkaliémie.",
+doseT:">3mg ou digoxinémie >2ng/mL. Plantes: laurier rose, muguet.",demiVie:"36-48h (rénale)",picPlasma:"1-3h PO",
+signes:[{t:"Nausées, vomissements",g:0},{t:"Dyschromatopsie (vision jaune/verte)",g:0},{t:"Bradycardie, BAV",g:1},{t:"TV/FV",g:1},{t:"ESV bidirectionnelles (pathognomonique)",g:1},{t:"Hyperkaliémie",g:1},{t:"Tout trouble du rythme possible",g:1}],
+traitement:["DigiFab si K+>5.5, TV/FV, bradycardie <40 réfractaire","Dose: digoxinémie × poids / 100. Empirique: 6-12 flacons","Atropine pour bradycardie","Corriger hypoK+ AVANT antidote","PAS de calcium IV","PAS d'isoprénaline","Charbon activé si <2h"],
+surveillance:["ECG continu","Kaliémie /2-4h","Digoxinémie","Créatinine","Magnésémie"],
+sortie:["Rythme sinusal 24h","Kaliémie normale","Digoxinémie thérapeutique"]},
+{id:"alcools_toxiques",name:"Alcools toxiques",aliases:["méthanol","éthylène glycol","antigel","lave-glace","alcool à brûler"],class:"Alcool",category:"Toxiques environnementaux",toxidrome:[],
+physiopath:"ADH: méthanol→acide formique (rétine), EG→oxalate (IRA). TA et TO = marqueurs clés.",
+doseT:"Méthanol: 15-30mL létal. EG: 1-1.5mL/kg",demiVie:"Méthanol 2-3h, EG 3-8h. Sous fomépizole: >50h",picPlasma:"30min-2h",
+signes:[{t:"Ébriété sans odeur d'alcool",g:0},{t:"Acidose métabolique sévère à TA élevé",g:1},{t:"Méthanol: troubles visuels, cécité",g:1},{t:"EG: IRA, cristaux d'oxalate",g:1},{t:"Convulsions, coma",g:1},{t:"TO augmenté (>10 mOsm/kg)",g:0}],
+traitement:["Fomépizole 15mg/kg puis 10mg/kg/12h","Alternative: éthanol IV","Hémodialyse si pH<7.15, atteinte organe, >50mg/dL","Acide folinique 50mg/6h (méthanol)","Thiamine + pyridoxine (EG)","Bicarbonates si acidose"],
+surveillance:["GDS, TA /2-4h","TO","Fond d'œil (méthanol)","Cristallurie, fonction rénale"],
+sortie:["Acidose corrigée","Concentration <20mg/dL","Fonction rénale stable","Ophtalmo si méthanol"]},
+{id:"flecainide",name:"Flécaïnide",aliases:["Flécaïne","flécaïnide"],class:"Antiarythmique Ic",category:"Cardiotropes",toxidrome:["esm"],
+physiopath:"Blocage puissant Na+ (ESM) → QRS larges → arythmie réentrante. Inotrope négatif.",
+doseT:">10mg/kg létal. Index thérapeutique étroit.",demiVie:"12-27h",picPlasma:"2-4h",
+signes:[{t:"Vertiges, vision floue",g:0},{t:"QRS >120ms",g:1},{t:"Bradycardie, BAV",g:1},{t:"TV, FV",g:1},{t:"Choc cardiogénique",g:1},{t:"Convulsions",g:1},{t:"Aspect Brugada-like",g:1}],
+traitement:["Bicarbonates 8.4% 250mL IV","Catécholamines","Intralipide 20%","ECMO","PAS d'antiarythmiques classe I","Charbon activé si <1h"],
+surveillance:["ECG continu (QRS)","PA invasive","Lactates, GDS"],
+sortie:["QRS <120ms 24h","Hémodynamique stable","Pas de trouble du rythme"]},
+{id:"tricycliques",name:"Antidépresseurs tricycliques",aliases:["Anafranil","Laroxyl","amitriptyline","clomipramine","imipramine","dosulépine","Prothiaden"],class:"Antidépresseur tricyclique",category:"Médicaments",toxidrome:["anticholinergique","esm"],
+physiopath:"Triple toxicité: ESM (Na+), anticholinergique, inhibition recapture NA/5-HT.",
+doseT:">10mg/kg toxique, >20mg/kg létal",demiVie:"10-50h",picPlasma:"2-6h",
+signes:[{t:"Syndrome anticholinergique: mydriase, tachycardie, rétention",g:0},{t:"QRS >100ms",g:1},{t:"Convulsions précoces",g:1},{t:"TV, FV, TdP",g:1},{t:"Coma pyramidal",g:1},{t:"Choc cardiogénique",g:1},{t:"R >3mm en aVR",g:1}],
+traitement:["Bicarbonates 8.4% si QRS >100ms","BZD pour convulsions","Intralipide 20%","Catécholamines","ECMO","PAS de flumazénil","Charbon activé si <1-2h"],
+surveillance:["ECG continu (QRS, QTc, R aVR)","PA","Température","Diurèse"],
+sortie:["QRS <100ms >24h","Conscience normale","ECG normal"]},
+{id:"chloroquine",name:"Chloroquine / HCQ",aliases:["Nivaquine","Plaquenil","chloroquine","hydroxychloroquine"],class:"Antipaludéen",category:"Médicaments",toxidrome:["esm"],
+physiopath:"ESM (Na+ et K+) → QRS larges + QT long. Inotrope négatif. ACR possible en 2-3h.",
+doseT:"Chloroquine >2g = dose mortelle. HCQ: dès 5g",demiVie:"1-2 mois",picPlasma:"1-6h",
+signes:[{t:"Troubles visuels, acouphènes",g:0},{t:"Hypokaliémie sévère (transfert IC)",g:1},{t:"QRS larges, QT long",g:1},{t:"TV/FV",g:1},{t:"Choc cardiogénique précoce",g:1},{t:"Convulsions, coma",g:1}],
+traitement:["Protocole Riou-Baud: diazépam 1mg/kg + adrénaline 0.25µg/kg/min","Intubation précoce","Correction agressive hypoK+","Charbon activé si <1h","ECMO si réfractaire"],
+surveillance:["ECG continu","Kaliémie /1-2h","PA invasive","Lactates, GDS"],
+sortie:["ECG normal 48h","Kaliémie normale","Asymptomatique 72h"]},
+{id:"opioides",name:"Opioïdes",aliases:["morphine","héroïne","codéine","tramadol","fentanyl","oxycodone","méthadone","buprénorphine","Subutex","Skenan"],class:"Antalgique opioïde",category:"Médicaments",toxidrome:["opioide"],
+physiopath:"Agonistes µ → dépression respiratoire, myosis, sédation. Méthadone: QT long. Tramadol: convulsions + sérotoninergique.",
+doseT:"Variable. Fentanyl létal dès µg. Méthadone 1mg/kg létal chez naïf",demiVie:"Morphine 2-4h, méthadone 15-60h, fentanyl 2-4h",picPlasma:"IV immédiat, PO 1-2h",
+signes:[{t:"Triade: coma + myosis serré + bradypnée",g:1},{t:"Dépression respiratoire (FR <10)",g:1},{t:"Hypotension, bradycardie",g:1},{t:"OAP (héroïne)",g:1},{t:"Hypothermie",g:0},{t:"Rhabdomyolyse",g:1},{t:"QT long (méthadone)",g:1},{t:"Convulsions (tramadol)",g:1}],
+traitement:["Naloxone 0.4mg IV, titrer par 0.04-0.1mg (objectif FR>12)","Perfusion naloxone si opioïde longue durée","Intubation si échec","Charbon activé si ingestion <1h"],
+surveillance:["FR, SpO2, conscience","PA, FC","Surveillance selon demi-vie","CPK si rhabdomyolyse"],
+sortie:["FR >12 stable sans naloxone >2× demi-vie","Conscience normale","SpO2 >95%","Évaluation psy/addictologie"]},
+{id:"carbamazepine",name:"Carbamazépine",aliases:["Tegretol","carbamazépine","CBZ"],class:"Antiépileptique",category:"Médicaments",toxidrome:["anticholinergique"],
+physiopath:"Blocage Na+ + effets anticholinergiques. Auto-induction. Métabolite actif 10,11-époxyde.",
+doseT:">20mg/kg modérée, >40mg/kg sévère",demiVie:"12-17h, métabolite 5-8h",picPlasma:"4-8h (>24h en surdosage)",
+signes:[{t:"Ataxie, nystagmus, diplopie",g:0},{t:"Coma avec myoclonies",g:1},{t:"Syndrome anticholinergique",g:0},{t:"Convulsions paradoxales",g:1},{t:"BAV, QRS larges",g:1},{t:"Dépression respiratoire",g:1},{t:"Hyponatrémie (SIADH)",g:0}],
+traitement:["Charbon activé doses répétées (25g/4h)","BZD si convulsions","Bicarbonates si QRS >100ms","Hémodialyse si sévère"],
+surveillance:["CBZ-émie /4-6h","ECG","Natrémie","Conscience, FR"],
+sortie:["CBZ-émie <12µg/mL","Conscience normale","ECG normal","Natrémie normale"]},
+{id:"valproate",name:"Acide valproïque",aliases:["Dépakine","Dépakote","valproate","VPA"],class:"Antiépileptique",category:"Médicaments",toxidrome:[],
+physiopath:"↑ GABA + blocage Na+. Surdosage: métabolites toxiques → hyperammoniémie, dysfonction mitochondriale.",
+doseT:">200mg/kg sévère, >400mg/kg létal",demiVie:"8-20h (saturable)",picPlasma:"1-4h (entérique: 3-8h)",
+signes:[{t:"Somnolence, confusion",g:0},{t:"Coma profond",g:1},{t:"Hyperammoniémie sans IHC",g:1},{t:"Acidose lactique",g:1},{t:"Thrombopénie, hypofibrinogénémie",g:1},{t:"IHC (rare mais grave)",g:1},{t:"Pancréatite",g:1},{t:"Œdème cérébral",g:1}],
+traitement:["Charbon activé doses répétées","L-carnitine IV 100mg/kg puis 15mg/kg/4h","Hémodialyse si VPA >900, coma, acidose","Support vital"],
+surveillance:["VPA-émie /4h","Ammoniémie","Bilan hépatique, lipase","NFS, fibrinogène","Lactates"],
+sortie:["VPA <100µg/mL","NH3 normale","Plaquettes normales","Conscience normale"]},
+{id:"salicyles",name:"Salicylés",aliases:["aspirine","acide acétylsalicylique","Aspégic","Kardégic"],class:"AINS/Antalgique",category:"Médicaments",toxidrome:[],
+physiopath:"Découplage phosphorylation oxydative → acidose. Stimulation centre respiratoire → alcalose respiratoire précoce.",
+doseT:">150mg/kg modérée, >300mg/kg sévère, >500mg/kg létal",demiVie:"2-4h (thérapeutique), 15-30h (surdosage)",picPlasma:"1-2h (entérique: 6-12h)",
+signes:[{t:"Nausées, acouphènes",g:0},{t:"Alcalose respiratoire puis acidose métabolique",g:1},{t:"Hyperthermie",g:1},{t:"Déshydratation",g:0},{t:"Confusion, convulsions, coma",g:1},{t:"OAP non cardiogénique",g:1},{t:"Hypoglycémie (enfant)",g:1},{t:"Troubles hémostase",g:0}],
+traitement:["Charbon activé (doses répétées si LP)","Alcalinisation urinaire (pH urinaire 7.5-8)","Réhydratation IV","Hémodialyse si salicylémie >100, acidose, atteinte organe","Glucose IV","Éviter intubation si possible"],
+surveillance:["Salicylémie /2-4h","GDS, pH","Ionogramme, glycémie","Lactates"],
+sortie:["Salicylémie <30mg/dL en décroissance","pH normal","Asymptomatique"]},
+{id:"organophosphores",name:"Organophosphorés",aliases:["insecticides","pesticides","parathion","malathion","sarin","gaz neurotoxiques","carbamates"],class:"Anticholinestérasique",category:"Toxiques environnementaux",toxidrome:["cholinergique"],
+physiopath:"Inhibition irréversible (OP) ou réversible (carbamates) de l'AChE → accumulation d'ACh.",
+doseT:"Variable. Parathion: quelques mg = létal",demiVie:"OP: liaison irréversible (aging 24-48h)",picPlasma:"PO 30min-2h, cutané 2-12h",
+signes:[{t:"DUMBELS: diarrhée, urination, myosis, bronchospasme/bronchorrhée, émèse, larmoiement, salivation",g:1},{t:"Fasciculations, paralysie",g:1},{t:"Confusion, convulsions, coma",g:1},{t:"Détresse respiratoire",g:1},{t:"Bradycardie sévère",g:1},{t:"Syndrome intermédiaire (24-96h)",g:1}],
+traitement:["Atropine 1-2mg IV doublée /5min jusqu'à assèchement bronchique","Pralidoxime 1-2g IV puis 500mg/h (<12h)","BZD si convulsions","Décontamination cutanée","Charbon activé si <1h"],
+surveillance:["Cholinestérases","FR, SpO2 /h","ECG","CPK","Surveillance 48-72h"],
+sortie:["Cholinestérases en remontée","Sevrage atropine réussi","FR normale","Pas de syndrome intermédiaire (J3-J4)"]},
+{id:"fer",name:"Fer",aliases:["Tardyféron","Ferograd","Fumafer","sulfate ferreux"],class:"Supplément martial",category:"Médicaments",toxidrome:[],
+physiopath:"Action corrosive digestive. Fe²+ libre → stress oxydatif → nécrose hépatique. Acidose par découplage oxydatif.",
+doseT:">20mg/kg toxique, >60mg/kg létal (fer élément)",demiVie:"Distribution tissulaire",picPlasma:"2-4h",
+signes:[{t:"Phase 1 (0-6h): vomissements, diarrhée sanglante",g:0},{t:"Phase 2 (6-24h): amélioration trompeuse",g:0},{t:"Phase 3 (12-48h): choc, acidose, IHC",g:1},{t:"Phase 4 (2-6 sem): sténoses digestives",g:0},{t:"Hémorragie digestive massive",g:1}],
+traitement:["Déféroxamine 15mg/kg/h IV si fer >500µg/dL ou signes systémiques","Irrigation intestinale si comprimés à l'ASP","PAS de charbon activé","Réanimation hémodynamique"],
+surveillance:["Fer sérique","ASP","Bilan hépatique, coagulation","GDS, lactates","Urines (vin rosé sous déféroxamine)"],
+sortie:["Fer <350µg/dL","Pas de signes systémiques","Transit repris","Bilan hépatique normal"]},
+{id:"colchicine",name:"Colchicine",aliases:["Colchimax","colchicine"],class:"Anti-goutteux",category:"Médicaments",toxidrome:[],
+physiopath:"Inhibition polymérisation microtubules → blocage mitose. Toxicité multi-organe. Mortalité élevée >0.5mg/kg.",
+doseT:">0.5mg/kg létal. Pronostic très sombre >0.8mg/kg",demiVie:"20-40h",picPlasma:"1-3h",
+signes:[{t:"Phase 1 (0-24h): diarrhée profuse, vomissements",g:0},{t:"Phase 2 (24-72h): DMV — choc, SDRA, IHC, aplasie",g:1},{t:"Phase 3 (J7+): aplasie nadir puis récupération",g:0},{t:"Choc cardiogénique",g:1},{t:"CIVD",g:1},{t:"Rhabdomyolyse",g:1}],
+traitement:["PAS d'antidote validé (Fab anti-colchicine en ATU)","Charbon activé si <1-2h","Réanimation: catécholamines, ECMO","G-CSF si aplasie","Support transfusionnel"],
+surveillance:["NFS /6h","Bilan hépatique, coagulation","Troponine, BNP","CPK","Lactates"],
+sortie:["Sortie phase critique (>J7)","Reconstitution hémato","Fonction hépatique/rénale normalisée"]},
+{id:"antivitk",name:"Anticoagulants AVK/AOD",aliases:["Coumadine","Préviscan","warfarine","fluindione","Xarelto","Eliquis","Pradaxa","rivaroxaban","apixaban","dabigatran","raticides"],class:"Anticoagulant",category:"Médicaments",toxidrome:[],
+physiopath:"AVK: inhibition vit K réductase. AOD: inhibition directe Xa ou thrombine. Raticides: super-warfarines (demi-vie très longue).",
+doseT:"INR suprathérapeutique. Raticides: même ingestion minime dangereuse",demiVie:"Warfarine 36-42h, rivaroxaban 5-13h, brodifacoum 20-130j",picPlasma:"AVK 2-8h, rivaroxaban 2-4h",
+signes:[{t:"Hémorragies cutanéomuqueuses",g:0},{t:"Hémorragie grave: hématome, hémorragie digestive/cérébrale",g:1},{t:"Hématurie",g:0},{t:"Choc hémorragique",g:1}],
+traitement:["AVK: Vitamine K1 + CCP 25-50 UI/kg si hémorragie grave","Dabigatran: Idarucizumab 5g IV","Anti-Xa: Andexanet alfa ou CCP 50 UI/kg","Raticides: vitamine K1 20-50mg/j pendant semaines/mois","Transfusion si hémorragie active"],
+surveillance:["INR/anti-Xa /4-6h","NFS, Hb /4h si hémorragie","TP/TCA"],
+sortie:["INR/anti-Xa dans la cible","Pas d'hémorragie","Hb stable","Raticides: suivi INR hebdomadaire"]},
+{id:"metformine",name:"Metformine",aliases:["Glucophage","Stagid","metformine"],class:"Antidiabétique",category:"Médicaments",toxidrome:[],
+physiopath:"Inhibition néoglucogenèse et complexe I mitochondrial → acidose lactique. MALA: mortalité 30-50%.",
+doseT:">5g aigu. Accumulation thérapeutique si IR plus fréquent",demiVie:"4-8h (rénale pure)",picPlasma:"2-3h",
+signes:[{t:"Nausées, vomissements, diarrhée",g:0},{t:"Acidose lactique sévère (lactates >5-20)",g:1},{t:"IRA",g:1},{t:"Hypoglycémie (rare en monothérapie)",g:0},{t:"Choc",g:1},{t:"Hypothermie",g:0},{t:"Coma",g:1}],
+traitement:["Hémodialyse précoce (traitement de choix)","Bicarbonates si pH <7.1","Catécholamines","ECMO si réfractaire","Charbon activé si <1h"],
+surveillance:["Lactates /2h","GDS","Créatinine, ionogramme","Glycémie"],
+sortie:["Lactates <2","pH normal","Fonction rénale améliorée","Réévaluation metformine"]},
+{id:"sulfonylurees",name:"Sulfamides hypoglycémiants",aliases:["Daonil","Amarel","glibenclamide","gliclazide","glimépiride","Diamicron"],class:"Antidiabétique",category:"Médicaments",toxidrome:[],
+physiopath:"Stimulation sécrétion insuline → hypoglycémie prolongée, indépendante de la glycémie. 1 comprimé peut être létal chez l'enfant.",
+doseT:"Tout surdosage dangereux",demiVie:"Glibenclamide 4-12h, gliclazide 10-12h",picPlasma:"1-4h (LP: 6-8h)",
+signes:[{t:"Hypoglycémie sévère et prolongée (jusqu'à 72h)",g:1},{t:"Coma",g:1},{t:"Convulsions",g:1},{t:"Signes neuroglycopéniques",g:1},{t:"Signes adrénergiques: sueurs, tremblements",g:0},{t:"Séquelles neurologiques",g:1}],
+traitement:["Glucose IV: G30% 50mL puis G10% continu","Octréotide 50-100µg SC /6-8h","Glucagon 1mg IM/IV (transitoire)","Alimentation précoce","Charbon activé si <1h","Surveillance ≥24h (LP ≥48h)"],
+surveillance:["Glycémie capillaire /30min puis /1h","Insulinémie, peptide C","Kaliémie","Conscience"],
+sortie:["Glycémie >5 mmol/L stable sans glucose >24h","Alimentation tolérée","Conscience normale"]},
+{id:"cocaine",name:"Cocaïne",aliases:["cocaïne","crack","coke","free base"],class:"Stimulant",category:"Drogues",toxidrome:["sympathomimetique"],
+physiopath:"Blocage recapture DA/NA/5-HT + blocage Na+ (ESM). Vasoconstricteur puissant.",
+doseT:"~1-1.5g nasal chez naïf (très variable)",demiVie:"1h, métabolites 4-6h",picPlasma:"IV/fumée: immédiat, nasal: 15-60min",
+signes:[{t:"Agitation, paranoïa, hallucinations",g:0},{t:"Tachycardie, HTA, hyperthermie",g:0},{t:"SCA / IDM",g:1},{t:"Dissection aortique",g:1},{t:"AVC",g:1},{t:"Convulsions",g:1},{t:"Rhabdomyolyse",g:1},{t:"TV, FV (ESM)",g:1}],
+traitement:["BZD en 1ère intention","SCA: BZD + aspirine + nitrés (PAS de BB non sélectifs)","Refroidissement si hyperthermie","Bicarbonates si QRS larges","Intralipide si arythmie réfractaire"],
+surveillance:["ECG, troponine","PA, FC, T°","CPK","Scanner cérébral si déficit"],
+sortie:["ECG normal, troponine négative H12","Hémodynamique stable","Normothermie","Addictologie"]},
+{id:"amphetamines",name:"Amphétamines / MDMA",aliases:["ecstasy","MDMA","méthamphétamine","speed","3-MMC","cathinones"],class:"Stimulant",category:"Drogues",toxidrome:["sympathomimetique","serotoninergique"],
+physiopath:"Libération massive monoamines. MDMA: action 5-HT prédominante → syndrome sérotoninergique + hyponatrémie (SIADH + potomanie).",
+doseT:"MDMA >2mg/kg modéré, >5mg/kg sévère",demiVie:"Amphétamine 10-30h, MDMA 6-9h",picPlasma:"1-3h",
+signes:[{t:"Agitation, bruxisme (MDMA)",g:0},{t:"Tachycardie, HTA, mydriase",g:0},{t:"Hyperthermie maligne >40°C",g:1},{t:"Hyponatrémie sévère (MDMA)",g:1},{t:"Syndrome sérotoninergique",g:1},{t:"Convulsions",g:1},{t:"Rhabdomyolyse, CIVD",g:1},{t:"AVC",g:1},{t:"IHC aiguë (MDMA)",g:1}],
+traitement:["BZD","Refroidissement actif si T>39°C","Restriction hydrique si hypoNa (NaCl 3% si <120 + signes neuro)","Cyproheptadine si syndrome sérotoninergique","PAS de BB"],
+surveillance:["T° en continu","Natrémie /2-4h","CPK, créatinine","Bilan hépatique","Scanner si signes focaux"],
+sortie:["Normothermie","Natrémie normale","CPK en décroissance","Conscience normale","Addictologie"]},
+{id:"cannabis",name:"Cannabis / Cannabinoïdes synth.",aliases:["THC","marijuana","haschich","Spice","K2","cannabinoïdes de synthèse"],class:"Cannabinoïde",category:"Drogues",toxidrome:[],
+physiopath:"Agoniste CB1/CB2. Synthétiques: affinité CB1 très forte → toxicité imprévisible.",
+doseT:"THC naturel: rarement létal. Synthétiques: imprévisible",demiVie:"THC 20-57h (lipophile)",picPlasma:"Inhalé 3-10min, PO 1-3h",
+signes:[{t:"Anxiété, panique, paranoïa",g:0},{t:"Tachycardie, hypotension orthostatique",g:0},{t:"Hyperémèse cannabinoïde (chronique)",g:0},{t:"Synthétiques: psychose, convulsions",g:1},{t:"Synthétiques: IRA, rhabdomyolyse",g:1},{t:"Synthétiques: coagulopathie",g:1}],
+traitement:["BZD","Hyperémèse: capsaïcine, douche chaude, ondansétron","Synthétiques: traitement symptomatique","Hydratation IV"],
+surveillance:["PA, FC","ECG si cardiaques","CPK si synthétiques","Coagulation si synthétiques"],
+sortie:["Asymptomatique >4-6h","Synthétiques: 12-24h","Addictologie si besoin"]},
+{id:"ethanol",name:"Éthanol",aliases:["alcool","intoxication alcoolique","ivresse"],class:"Alcool",category:"Drogues",toxidrome:[],
+physiopath:"↑ GABA-A + inhibition NMDA → dépression SNC. Métabolisme saturable (ordre 0): 0.15-0.2g/L/h.",
+doseT:">3g/L coma, >5g/L létal. Enfant très sensible",demiVie:"0.15-0.2g/L/h (ordre 0)",picPlasma:"30-90min à jeun",
+signes:[{t:"Ébriété, dysarthrie, ataxie",g:0},{t:"Coma éthylique",g:1},{t:"Dépression respiratoire",g:1},{t:"Hypothermie",g:1},{t:"Hypoglycémie (enfant, dénutri)",g:1},{t:"Inhalation bronchique",g:1},{t:"Acidocétose alcoolique",g:0},{t:"Rhabdomyolyse",g:0}],
+traitement:["PLS + surveillance","Intubation si GCS <8","Glucose IV (enfant, hypoglycémie)","Thiamine IV 500mg avant glucose si éthylisme","Réchauffement","PAS de flumazénil"],
+surveillance:["Glasgow /30min","Glycémie","Température","SpO2, FR"],
+sortie:["Glasgow 15","Glycémie normale","T° >36°C","Marche stable","Éliminer co-intoxication"]},
+{id:"neuroleptiques",name:"Neuroleptiques",aliases:["Haldol","Zyprexa","Risperdal","Tercian","Largactil","Loxapac","halopéridol","olanzapine","rispéridone","cyamémazine","chlorpromazine","quétiapine","clozapine"],class:"Antipsychotique",category:"Médicaments",toxidrome:["anticholinergique"],
+physiopath:"Blocage D2, α1, H1, muscarinique, Na+/K+. Risque de SMN (idiosyncrasique).",
+doseT:"Chlorpromazine >2g, olanzapine >100mg, quétiapine >3g",demiVie:"Halopéridol 12-36h, olanzapine 21-54h",picPlasma:"1-6h",
+signes:[{t:"Somnolence, coma",g:1},{t:"Hypotension (α1)",g:1},{t:"Tachycardie",g:0},{t:"QT long, TdP",g:1},{t:"Syndrome extrapyramidal",g:0},{t:"SMN: hyperthermie, rigidité, rhabdomyolyse",g:1},{t:"Convulsions (clozapine)",g:1},{t:"Myocardite (clozapine)",g:1}],
+traitement:["Support vital","QT long/TdP: magnésium 2g, isoprénaline, EES","Dystonie: tropatépine ou bipéridène IM/IV","SMN: dantrolène + bromocriptine + refroidissement","BZD si convulsions","Charbon activé si <1-2h"],
+surveillance:["ECG continu (QTc)","PA, FC","T°","CPK si rigidité"],
+sortie:["QTc normal","Conscience normale","PA stable","Pas de SMN","CPK normales"]},
+{id:"paracetamol_codeine",name:"Paracétamol + Codéine",aliases:["Codoliprane","Dafalgan Codéiné","Efferalgan Codéiné","Klipal"],class:"Antalgique palier 2",category:"Médicaments",toxidrome:["opioide"],
+physiopath:"Double toxicité: paracétamol (hépatotoxicité) + codéine→morphine (dépression respiratoire).",
+doseT:"Selon paracétamol (>150mg/kg) ET codéine (>5mg/kg)",demiVie:"Paracétamol 2-4h, codéine 3-4h",picPlasma:"30min-2h",
+signes:[{t:"Signes opioïdes: somnolence, myosis, bradypnée",g:1},{t:"Hépatotoxicité paracétamol retardée",g:1},{t:"Nausées, vomissements",g:0}],
+traitement:["NAC (pour paracétamol)","Naloxone titrée (pour codéine)","Charbon activé si <1-2h","Double surveillance"],
+surveillance:["Paracétamolémie H4","FR, SpO2, conscience","ASAT/ALAT, TP/INR H12-24"],
+sortie:["Paracétamolémie sous ligne traitement","FR >12, conscience normale","Bilan hépatique normal"]},
+{id:"cyanure",name:"Cyanure",aliases:["acide cyanhydrique","HCN","KCN","fumées d'incendie (plastiques)"],class:"Poison cellulaire",category:"Toxiques environnementaux",toxidrome:[],
+physiopath:"Inhibition cytochrome c oxydase (complexe IV) → blocage respiration aérobie → acidose lactique avec SaO2 normale.",
+doseT:"HCN inhalé: quelques ppm létal. KCN: 1-3mg/kg",demiVie:"1-3h (rhodanèse)",picPlasma:"Inhalation: secondes, ingestion: 15-60min",
+signes:[{t:"Céphalées, vertiges",g:0},{t:"PCI brutale, coma",g:1},{t:"Convulsions",g:1},{t:"ACR rapide",g:1},{t:"Acidose lactique majeure + SaO2 normale",g:1},{t:"Peau rouge cerise (inconstant)",g:0}],
+traitement:["Hydroxocobalamine (Cyanokit) 5g IV en 15min","Alternative: EDTA dicobaltique 300mg IV","O2 100%","RCP si ACR","PAS de bouche-à-bouche (risque sauveteur)"],
+surveillance:["Lactates","GDS","ECG continu","SvO2","HbCO si fumées"],
+sortie:["Lactates normaux","Conscience normale","ECG normal","Stable >6h"]},
+{id:"champignons",name:"Champignons hépatotoxiques",aliases:["amanite phalloïde","Amanita phalloides","amatoxines","lépiotes"],class:"Mycotoxines",category:"Toxiques environnementaux",toxidrome:[],
+physiopath:"Amatoxines: inhibition ARN polymérase II → nécrose hépatocellulaire. Cycle entéro-hépatique. Début >6h = alarme.",
+doseT:"1 chapeau d'amanite phalloïde = potentiellement létal",demiVie:"Courte plasmatique mais cycle entéro-hépatique",picPlasma:"Effets retardés 6-24h",
+signes:[{t:"Phase 1 (6-24h): diarrhée profuse retardée",g:0},{t:"Phase 2 (24-48h): amélioration trompeuse, début cytolyse",g:0},{t:"Phase 3 (48-96h): IHC fulminante",g:1},{t:"IRA",g:1},{t:"Hypoglycémie sévère",g:1},{t:"CIVD",g:1}],
+traitement:["Charbon activé doses répétées (25g/4h)","Silibinine 20-50mg/kg/j IV","NAC protocole Prescott","Pénicilline G 1MUI/kg/j (discuté)","Réhydratation massive","Transplantation hépatique (critères de Clichy)"],
+surveillance:["ASAT/ALAT /6-12h","TP/INR, facteur V","Créatinine","Glycémie /4h","Bilan pré-transplantation"],
+sortie:["Transaminases en décroissance","TP/facteur V en amélioration","Fonction rénale stable","Suivi hépatologique"]}
+];
+
+// ===================== TOXIDROMES =====================
+const toxidromes=[
+{nom:"Syndrome anticholinergique (atropinique)",description:"Blocage des récepteurs muscariniques",signes:["Mydriase","Tachycardie","Sécheresse muqueuses","Rétention urinaire","Hyperthermie","Agitation/Confusion","Hallucinations","Flush cutané"],molecules:["Atropine","Antihistaminiques","Antidépresseurs tricycliques","Antipsychotiques"],conduite:"Physostigmine si signes sévères (0.5-2mg IV lent), benzodiazépines si agitation, refroidissement si hyperthermie"},
+{nom:"Syndrome cholinergique (muscarinique)",description:"Stimulation excessive des récepteurs cholinergiques",signes:["Myosis","Bradycardie","Hypersécrétion (larmes, salive, sueur)","Bronchospasme","Diarrhée","Fasciculations","Détresse respiratoire"],molecules:["Organophosphorés","Carbamates","Champignons muscariniens","Néostigmine"],conduite:"Atropine 1-2mg IV répété jusqu'à assèchement sécrétions, pralidoxime si organophosphorés"},
+{nom:"Syndrome sérotoninergique",description:"Excès de sérotonine au niveau central et périphérique",signes:["Agitation","Confusion","Myoclonies","Hyperréflexie","Tremblements","Diarrhée","Hyperthermie","Clonus (spontané ou inductible)"],molecules:["ISRS","IRSNA","IMAO","Tramadol","Lithium"],conduite:"Arrêt de tous les sérotoninergiques, benzodiazépines, cyproheptadine 12mg puis 4mg/4h, refroidissement"},
+{nom:"Syndrome opioïde",description:"Stimulation des récepteurs opioïdes µ, κ, δ",signes:["Myosis serré bilatéral","Bradypnée / apnée","Somnolence / coma","Hypotension","Bradycardie","Hypothermie"],molecules:["Morphine","Héroïne","Fentanyl","Méthadone","Codéine","Tramadol"],conduite:"Naloxone 0.4mg IV/IM, titration par 0.1mg, perfusion continue si récidive (2/3 dose de titration/h)"},
+{nom:"Syndrome sympathomimétique",description:"Stimulation excessive du système nerveux sympathique",signes:["Mydriase","Tachycardie","Hypertension","Hyperthermie","Agitation","Convulsions","Sudation"],molecules:["Cocaïne","Amphétamines","MDMA","Théophylline"],conduite:"Benzodiazépines en première ligne, refroidissement, éviter bêta-bloquants purs (risque alpha non opposé)"},
+{nom:"Stabilisant de membrane (effet BSM)",description:"Blocage des canaux sodiques rapides cardiaques",signes:["Élargissement QRS > 100ms","Onde R en aVR > 3mm","Tachycardie ventriculaire","Bradycardie réfractaire","Hypotension","Convulsions"],molecules:["Antidépresseurs tricycliques","Flécaïnide","Propranolol","Chloroquine","Carbamazépine","Cocaïne"],conduite:"Bicarbonate de sodium molaire 8.4% (250mL bolus, objectif QRS < 100ms), émulsion lipidique 20% si arrêt réfractaire"},
+{nom:"Syndrome malin des neuroleptiques",description:"Réaction idiosyncrasique aux neuroleptiques ou arrêt brutal dopaminergiques",signes:["Hyperthermie > 40°C","Rigidité musculaire généralisée","Troubles de conscience","Instabilité tensionnelle","Tachycardie","CPK élevées","Hyperleucocytose"],molecules:["Halopéridol","Chlorpromazine","Rispéridone","Olanzapine"],conduite:"Arrêt du neuroleptique, dantrolène 2.5mg/kg IV, bromocriptine 2.5-10mg/8h PO, refroidissement actif, réhydratation"}
+];
+
+// ===================== ANTIDOTES =====================
+const antidotes=[
+{nom:"N-Acétylcystéine (NAC)",indication:"Intoxication au paracétamol",posologie:"150mg/kg en 1h, puis 50mg/kg en 4h, puis 100mg/kg en 16h (protocole Prescott modifié)",molecules:["Paracétamol"]},
+{nom:"Flumazénil (Anexate®)",indication:"Intoxication aux benzodiazépines",posologie:"0.2mg IV puis 0.1mg/min (max 2mg). CI: co-ingestion tricycliques/convulsivants",molecules:["Benzodiazépines"]},
+{nom:"Naloxone (Narcan®)",indication:"Intoxication aux opioïdes",posologie:"0.4mg IV/IM, titration 0.1mg/2min. Perfusion: 2/3 dose titration/h",molecules:["Morphine","Codéine","Tramadol","Héroïne","Fentanyl","Méthadone"]},
+{nom:"Charbon activé",indication:"Décontamination digestive (< 1-2h post-ingestion)",posologie:"50g PO adulte (1g/kg enfant). Doses répétées: 25g/4-6h pour certains toxiques",molecules:["Paracétamol","Carbamazépine","Théophylline","Colchicine","Amanite phalloïde"]},
+{nom:"Bicarbonate de sodium 8.4%",indication:"Effet stabilisant de membrane, acidose métabolique",posologie:"250mL bolus IV, renouvelable. Objectif QRS < 100ms et pH 7.45-7.55",molecules:["Antidépresseurs tricycliques","Flécaïnide","Chloroquine","Propranolol"]},
+{nom:"Glucagon",indication:"Intoxication bêta-bloquants, inhibiteurs calciques",posologie:"5-10mg IV bolus puis 2-5mg/h en perfusion continue",molecules:["Propranolol","Bêta-bloquants","Inhibiteurs calciques"]},
+{nom:"Insuline forte dose (HIE)",indication:"Intoxication inhibiteurs calciques/bêta-bloquants réfractaire",posologie:"Bolus 1 UI/kg puis 0.5-2 UI/kg/h + G10% + surveillance K+/glycémie",molecules:["Vérapamil","Diltiazem","Propranolol"]},
+{nom:"Émulsion lipidique 20% (Intralipide®)",indication:"Arrêt cardiaque réfractaire sur toxique lipophile",posologie:"1.5mL/kg bolus puis 0.25mL/kg/min pendant 30-60min (max 12mL/kg)",molecules:["Anesthésiques locaux","Antidépresseurs tricycliques","Inhibiteurs calciques","Propranolol"]},
+{nom:"Hydroxocobalamine (Cyanokit®)",indication:"Intoxication au cyanure et fumées d'incendie",posologie:"5g IV en 15min, renouvelable 1 fois",molecules:["Cyanure","Fumées d'incendie"]},
+{nom:"Oxygénothérapie hyperbare (OHB)",indication:"Intoxication au monoxyde de carbone sévère",posologie:"2.5-3 ATA pendant 60-90min",molecules:["Monoxyde de carbone"]},
+{nom:"Atropine",indication:"Syndrome cholinergique, intoxication organophosphorés",posologie:"1-2mg IV, doublé toutes les 5min jusqu'à assèchement des sécrétions",molecules:["Organophosphorés","Carbamates"]},
+{nom:"Pralidoxime (Contrathion®)",indication:"Intoxication organophosphorés (réactivateur cholinestérases)",posologie:"30mg/kg IV en 30min puis 8-10mg/kg/h en continu",molecules:["Organophosphorés"]},
+{nom:"Diazépam / Midazolam",indication:"Convulsions toxiques, agitation",posologie:"Diazépam 10mg IV ou Midazolam 5mg IM, renouvelable",molecules:["Chloroquine","Théophylline","Cocaïne","ISRS","Lithium"]},
+{nom:"Déféroxamine (Desferal®)",indication:"Intoxication au fer",posologie:"15mg/kg/h IV en continu (max 80mg/kg/24h ou 6g/24h)",molecules:["Fer"]},
+{nom:"Fomépizole (4-MP)",indication:"Intoxication méthanol et éthylène glycol",posologie:"15mg/kg IV puis 10mg/kg/12h × 4 doses, puis 15mg/kg/12h",molecules:["Méthanol","Éthylène glycol"]},
+{nom:"Silibinine (Légalon SIL®)",indication:"Intoxication amanite phalloïde",posologie:"20-50mg/kg/j IV en 4 perfusions de 2h",molecules:["Amanite phalloïde"]},
+{nom:"Calcium IV",indication:"Intoxication inhibiteurs calciques, hyperkaliémie toxique",posologie:"Gluconate Ca 10%: 30-60mL IV ou CaCl2 10%: 10-20mL IV central",molecules:["Vérapamil","Diltiazem","Acide fluorhydrique"]},
+{nom:"Phytoménadione (Vitamine K1)",indication:"Surdosage AVK, intoxication anticoagulants",posologie:"10mg IV lent. Relais PO selon INR cible",molecules:["AVK","Raticides anticoagulants"]},
+{nom:"Bleu de méthylène",indication:"Méthémoglobinémie toxique > 30%",posologie:"1-2mg/kg IV en 5min, renouvelable 1 fois",molecules:["Dapsone","Nitrites","Poppers"]},
+{nom:"Octréotide",indication:"Hypoglycémie réfractaire sur sulfamides hypoglycémiants",posologie:"50-100µg SC/IV toutes les 6-12h",molecules:["Sulfamides hypoglycémiants"]},
+{nom:"L-Carnitine",indication:"Intoxication acide valproïque avec hyperammoniémie",posologie:"100mg/kg IV (max 6g) puis 50mg/kg/6h",molecules:["Acide valproïque"]},
+{nom:"Idarucizumab (Praxbind®)",indication:"Neutralisation dabigatran",posologie:"5g IV en 2 bolus de 2.5g",molecules:["Dabigatran"]},
+{nom:"Andexanet alfa (Ondexxya®)",indication:"Neutralisation anti-Xa (rivaroxaban, apixaban)",posologie:"Bolus 400-800mg puis perfusion 4-8mg/min pendant 2h selon dose/délai",molecules:["Rivaroxaban","Apixaban"]},
+{nom:"Digoxin Immune Fab (DigiFab®)",indication:"Intoxication digitalique sévère",posologie:"Nombre de flacons = digoxinémie (ng/mL) × poids (kg) / 100",molecules:["Digoxine"]}
+];
+
+// ===================== INTERACTIONS =====================
+const interactions=[
+{mols:["Paracétamol","Alcool éthylique"],desc:"L'alcool chronique induit le CYP2E1 augmentant la production de NAPQI. Seuil toxique abaissé à 75mg/kg",severity:"haute"},
+{mols:["Benzodiazépines","Alcool éthylique"],desc:"Potentialisation de la dépression du SNC. Risque majoré d'arrêt respiratoire",severity:"haute"},
+{mols:["Benzodiazépines","Morphine"],desc:"Synergie dépresseur respiratoire. Réduction des doses de naloxone/flumazénil nécessaire",severity:"haute"},
+{mols:["Tramadol","ISRS (Sertraline/Citalopram)"],desc:"Risque de syndrome sérotoninergique. Tramadol est un inhibiteur de la recapture de sérotonine",severity:"haute"},
+{mols:["Lithium","AINS (Ibuprofène)"],desc:"Les AINS diminuent la clairance rénale du lithium → surdosage",severity:"haute"},
+{mols:["Lithium","IEC/ARA2"],desc:"Diminution de la clairance du lithium par les IEC et ARA2",severity:"haute"},
+{mols:["Digoxine","Amiodarone"],desc:"L'amiodarone augmente la digoxinémie de 70-100% par inhibition de la P-glycoprotéine",severity:"haute"},
+{mols:["Méthadone","Benzodiazépines"],desc:"Association fréquemment létale. Dépression respiratoire synergique",severity:"haute"},
+{mols:["Chloroquine","Diazépam"],desc:"Le diazépam à forte dose (2mg/kg) est protecteur dans l'intoxication à la chloroquine (protocole Clemessy)",severity:"info"},
+{mols:["Carbamazépine","Acide valproïque"],desc:"La carbamazépine augmente le métabolite hépatotoxique du valproate. Le valproate augmente l'époxyde toxique de la CBZ",severity:"haute"},
+{mols:["Paracétamol","Carbamazépine"],desc:"La carbamazépine (inducteur CYP) augmente la production de NAPQI",severity:"moyenne"},
+{mols:["ISRS (Sertraline/Citalopram)","Lithium"],desc:"Risque de syndrome sérotoninergique avec le lithium",severity:"moyenne"},
+{mols:["Cocaïne","Alcool éthylique"],desc:"Formation de cocaéthylène, métabolite cardiotoxique à demi-vie prolongée",severity:"haute"},
+{mols:["Cocaïne","Morphine"],desc:"Speedball : stimulation + dépression alternées, risque d'arrêt respiratoire retardé",severity:"haute"},
+{mols:["Théophylline","Cimétidine"],desc:"La cimétidine inhibe le CYP1A2, augmentant les taux de théophylline",severity:"moyenne"},
+{mols:["Colchicine","Macrolides"],desc:"Les macrolides inhibent la P-gp et le CYP3A4, augmentant la toxicité de la colchicine",severity:"haute"},
+{mols:["Méthotrexate","AINS (Ibuprofène)"],desc:"Les AINS diminuent la clairance rénale du MTX et le déplacent de l'albumine",severity:"haute"},
+{mols:["AVK","AINS (Ibuprofène)"],desc:"AINS déplacent les AVK de l'albumine + toxicité gastrique directe → hémorragie",severity:"haute"},
+{mols:["AVK","Paracétamol"],desc:"Le paracétamol à forte dose (>4g/j pendant >4j) potentialise l'effet des AVK (INR augmenté)",severity:"moyenne"},
+{mols:["Fer","Déféroxamine"],desc:"La déféroxamine est l'antidote spécifique du fer. Ne pas associer avec vitamine C (stress oxydatif)",severity:"info"},
+{mols:["Acide valproïque","Méropénème"],desc:"Les carbapénèmes diminuent drastiquement les taux de valproate (60-100%)",severity:"haute"},
+{mols:["Propranolol","Insuline"],desc:"Le propranolol masque les signes d'hypoglycémie et prolonge l'hypoglycémie",severity:"moyenne"},
+{mols:["Vérapamil","Propranolol"],desc:"Association contre-indiquée : bradycardie réfractaire, BAV complet, asystolie",severity:"haute"},
+{mols:["Digoxine","Hypokaliémie"],desc:"L'hypokaliémie potentialise la toxicité digitalique en augmentant la liaison aux Na/K ATPases",severity:"haute"},
+{mols:["Amiodarone","QT long"],desc:"L'amiodarone allonge le QT. Risque de torsades de pointes si associée à d'autres allongeurs du QT",severity:"haute"},
+{mols:["Morphine","Tramadol"],desc:"Association opioïde agoniste pur + agoniste partiel: risque additif dépression respiratoire + syndrome sérotoninergique",severity:"haute"},
+{mols:["Méthadone","Morphine"],desc:"Accumulation du risque opioïde. La méthadone a une demi-vie très longue (imprévisible)",severity:"haute"},
+{mols:["Cannabis","Benzodiazépines"],desc:"Potentialisation de la sédation. Le cannabis peut masquer les signes d'alerte neurologique",severity:"moyenne"},
+{mols:["Cannabis","Cocaïne"],desc:"Effets cardiovasculaires opposés mais risque de SCA majoré par la combinaison",severity:"moyenne"},
+{mols:["MDMA","ISRS (Sertraline/Citalopram)"],desc:"Syndrome sérotoninergique sévère. L'association MDMA + ISRS est particulièrement dangereuse",severity:"haute"},
+{mols:["Alcool éthylique","Méthotrexate"],desc:"Hépatotoxicité additive. L'alcool potentialise la fibrose hépatique induite par le MTX",severity:"haute"},
+{mols:["Insuline","Alcool éthylique"],desc:"L'alcool inhibe la néoglucogenèse, majorant et prolongeant l'hypoglycémie insulinique",severity:"haute"},
+{mols:["Acide valproïque","Paracétamol"],desc:"Le valproate diminue le glutathion hépatique, potentialisant la toxicité du NAPQI",severity:"moyenne"},
+{mols:["Flécaïnide","Amiodarone"],desc:"Association à risque d'arythmie. L'amiodarone augmente les taux de flécaïnide (inhibition CYP2D6)",severity:"haute"}
+];
+
+// ===================== CATEGORIES =====================
+const categories=[...new Set(molecules.map(m=>m.classe))].sort();
+
+// ===================== RENDER FUNCTIONS =====================
+
+function getClassColor(cls){return classColors[cls]||'#868e96'}
+
+function renderMolecules(){
+const app=document.getElementById('app');
+const filtered=molecules.filter(m=>{
+const matchCat=currentCat==='all'||m.classe===currentCat;
+const matchSearch=!searchQ||m.nom.toLowerCase().includes(searchQ)||m.classe.toLowerCase().includes(searchQ);
+return matchCat&&matchSearch;
+});
+let html=`<div class="search-bar"><input type="text" id="searchInput" placeholder="Rechercher une molécule ou classe..." value="${searchQ}" oninput="searchQ=this.value.toLowerCase();renderMolecules()"><select id="catSelect" onchange="currentCat=this.value;renderMolecules()"><option value="all">Toutes les classes</option>${categories.map(c=>`<option value="${c}"${c===currentCat?' selected':''}>${c}</option>`).join('')}</select></div>`;
+if(selected.length>0){
+const selMols=selected.map(i=>molecules[i]);
+const foundInter=interactions.filter(inter=>inter.mols.every(m=>selMols.some(s=>s.nom.includes(m)||m.includes(s.nom))));
+if(foundInter.length>0){
+html+=`<div class="inter-banner"><strong>⚠️ ${foundInter.length} interaction(s) détectée(s) :</strong>`;
+foundInter.forEach(fi=>{html+=`<div style="margin-top:8px;padding:8px 12px;background:var(--bg);border-radius:8px;border-left:3px solid ${fi.severity==='haute'?'#e03131':fi.severity==='moyenne'?'#f08c00':'#1971c2'}"><strong>${fi.mols.join(' + ')}</strong><br>${fi.desc}</div>`});
+html+=`</div>`;
+}
+html+=`<div style="margin-bottom:16px"><button class="sel-badge" onclick="selected=[];renderMolecules()">✕ Désélectionner tout (${selected.length})</button> ${selMols.map((m,i)=>`<span class="sel-badge" style="background:${getClassColor(m.classe)}22;color:${getClassColor(m.classe)};border:1px solid ${getClassColor(m.classe)}44">${m.nom}</span>`).join(' ')}</div>`;
+}
+html+=`<div class="mol-grid">`;
+filtered.forEach((m,idx)=>{
+const realIdx=molecules.indexOf(m);
+const isSel=selected.includes(realIdx);
+const cc=getClassColor(m.classe);
+html+=`<div class="mol-card${isSel?' selected':''}" onclick="toggleSelect(${realIdx})">
+<div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:10px">
+<h3 style="margin:0;font-size:1rem">${m.nom}</h3>
+<span class="class-badge" style="background:${cc}18;color:${cc};border:1px solid ${cc}33">${m.classe}</span>
+</div>
+<div style="display:flex;gap:12px;font-size:.78rem;color:var(--dim);flex-wrap:wrap">
+<span>⏱ T½: ${m.demiVie}</span><span>📈 Pic: ${m.pic}</span>
+</div>
+<div style="margin-top:10px;font-size:.82rem">${m.signes.filter(s=>s.g).map(s=>`<span style="color:#e03131">⚠ ${s.t}</span>`).join('<br>')}</div>
+<div style="margin-top:8px;text-align:right"><button class="btn-detail" onclick="event.stopPropagation();showDetail(${realIdx})">Détails →</button></div>
+</div>`;
+});
+html+=`</div>`;
+app.innerHTML=html;
+}
+
+function toggleSelect(idx){
+const i=selected.indexOf(idx);
+if(i===-1)selected.push(idx);else selected.splice(i,1);
+renderMolecules();
+}
+
+function showDetail(idx){
+const m=molecules[idx];
+const cc=getClassColor(m.classe);
+const modal=document.createElement('div');
+modal.className='modal-overlay';
+modal.onclick=e=>{if(e.target===modal)modal.remove()};
+modal.innerHTML=`<div class="modal-content">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+<h2 style="margin:0">${m.nom}</h2>
+<button onclick="this.closest('.modal-overlay').remove()" style="background:none;border:none;font-size:1.5rem;cursor:pointer;color:var(--txt)">✕</button>
+</div>
+<span class="class-badge" style="background:${cc}18;color:${cc};border:1px solid ${cc}33;margin-bottom:16px;display:inline-block">${m.classe}</span>
+<div class="detail-grid">
+<div class="detail-section"><h4>⏱ Pharmacocinétique</h4><p><strong>Demi-vie:</strong> ${m.demiVie}</p><p><strong>Pic plasmatique:</strong> ${m.pic}</p>${m.doseToxique?`<p><strong>Dose toxique:</strong> ${m.doseToxique}</p>`:''}</div>
+<div class="detail-section"><h4>🔍 Signes cliniques</h4>${m.signes.map(s=>`<p${s.g?' style="color:#e03131;font-weight:600"':''}>${s.g?'⚠ ':'• '}${s.t}</p>`).join('')}</div>
+<div class="detail-section"><h4>💊 Traitement</h4>${m.traitement.map(t=>`<p>• ${t}</p>`).join('')}</div>
+<div class="detail-section"><h4>📋 Surveillance</h4>${m.surveillance.map(s=>`<p>• ${s}</p>`).join('')}</div>
+<div class="detail-section"><h4>🏠 Critères de sortie</h4>${m.sortie.map(s=>`<p>✓ ${s}</p>`).join('')}</div>
+</div></div>`;
+document.body.appendChild(modal);
+}
+
+function renderToxidromes(){
+const app=document.getElementById('app');
+let html=`<div class="mol-grid">`;
+toxidromes.forEach((t,i)=>{
+html+=`<div class="mol-card" onclick="showToxidrome(${i})" style="cursor:pointer">
+<h3 style="margin:0 0 10px">${t.nom}</h3>
+<p style="font-size:.85rem;color:var(--dim);margin:0 0 12px">${t.description}</p>
+<div style="display:flex;flex-wrap:wrap;gap:6px">${t.signes.slice(0,4).map(s=>`<span class="class-badge">${s}</span>`).join('')}${t.signes.length>4?`<span class="class-badge">+${t.signes.length-4}</span>`:''}</div>
+</div>`;
+});
+html+=`</div>`;
+app.innerHTML=html;
+}
+
+function showToxidrome(i){
+const t=toxidromes[i];
+const modal=document.createElement('div');
+modal.className='modal-overlay';
+modal.onclick=e=>{if(e.target===modal)modal.remove()};
+modal.innerHTML=`<div class="modal-content">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+<h2 style="margin:0">${t.nom}</h2>
+<button onclick="this.closest('.modal-overlay').remove()" style="background:none;border:none;font-size:1.5rem;cursor:pointer;color:var(--txt)">✕</button>
+</div>
+<p style="color:var(--dim);margin-bottom:20px">${t.description}</p>
+<div class="detail-grid">
+<div class="detail-section"><h4>🔍 Signes cliniques</h4>${t.signes.map(s=>`<p>• ${s}</p>`).join('')}</div>
+<div class="detail-section"><h4>💊 Molécules impliquées</h4>${t.molecules.map(m=>`<p>• ${m}</p>`).join('')}</div>
+<div class="detail-section" style="grid-column:1/-1"><h4>🏥 Conduite à tenir</h4><p>${t.conduite}</p></div>
+</div></div>`;
+document.body.appendChild(modal);
+}
+
+function renderAntidotes(){
+const app=document.getElementById('app');
+let html=`<div class="mol-grid">`;
+antidotes.forEach((a,i)=>{
+html+=`<div class="mol-card" onclick="showAntidote(${i})" style="cursor:pointer">
+<h3 style="margin:0 0 8px">${a.nom}</h3>
+<p style="font-size:.85rem;color:var(--dim);margin:0 0 10px">${a.indication}</p>
+<div style="display:flex;flex-wrap:wrap;gap:6px">${a.molecules.slice(0,3).map(m=>`<span class="class-badge">${m}</span>`).join('')}${a.molecules.length>3?`<span class="class-badge">+${a.molecules.length-3}</span>`:''}</div>
+</div>`;
+});
+html+=`</div>`;
+app.innerHTML=html;
+}
+
+function showAntidote(i){
+const a=antidotes[i];
+const modal=document.createElement('div');
+modal.className='modal-overlay';
+modal.onclick=e=>{if(e.target===modal)modal.remove()};
+modal.innerHTML=`<div class="modal-content">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+<h2 style="margin:0">${a.nom}</h2>
+<button onclick="this.closest('.modal-overlay').remove()" style="background:none;border:none;font-size:1.5rem;cursor:pointer;color:var(--txt)">✕</button>
+</div>
+<div class="detail-grid">
+<div class="detail-section"><h4>📋 Indication</h4><p>${a.indication}</p></div>
+<div class="detail-section"><h4>💉 Posologie</h4><p>${a.posologie}</p></div>
+<div class="detail-section" style="grid-column:1/-1"><h4>🎯 Molécules ciblées</h4><div style="display:flex;flex-wrap:wrap;gap:8px">${a.molecules.map(m=>`<span class="class-badge">${m}</span>`).join('')}</div></div>
+</div></div>`;
+document.body.appendChild(modal);
+}
+
+// ===================== PATIENT TAB =====================
+let patientData={age:'',poids:'',sexe:'M',creat:'',glyc:'',na:'',k:'',cl:'',hco3:'',ph:'',glasgow:{y:4,v:5,m:6},pss:{neuro:0,cardio:0,respi:0,dig:0,renal:0,hepat:0,hemato:0,metab:0},timeline:[]};
+
+function renderPatient(){
+const app=document.getElementById('app');
+let html=`<div style="display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap">
+<button class="${patientView==='rapid'?'tab active':'tab'}" onclick="patientView='rapid';renderPatient()">Vue rapide</button>
+<button class="${patientView==='timeline'?'tab active':'tab'}" onclick="patientView='timeline';renderPatient()">Timeline</button></div>`;
+if(patientView==='rapid'){
+html+=`<div class="detail-grid">
+<div class="detail-section"><h4>👤 Données patient</h4>
+<div class="form-row"><label>Âge</label><input type="number" value="${patientData.age}" onchange="patientData.age=this.value" placeholder="ans"></div>
+<div class="form-row"><label>Poids</label><input type="number" value="${patientData.poids}" onchange="patientData.poids=this.value" placeholder="kg"></div>
+<div class="form-row"><label>Sexe</label><select onchange="patientData.sexe=this.value"><option value="M"${patientData.sexe==='M'?' selected':''}>Homme</option><option value="F"${patientData.sexe==='F'?' selected':''}>Femme</option></select></div>
+<div class="form-row"><label>Créatinine</label><input type="number" value="${patientData.creat}" onchange="patientData.creat=this.value" placeholder="µmol/L"></div>
+</div>
+<div class="detail-section"><h4>🧪 Biologie</h4>
+<div class="form-row"><label>Glycémie (g/L)</label><input type="number" step="0.01" value="${patientData.glyc}" onchange="patientData.glyc=this.value" placeholder="g/L"></div>
+<div class="form-row"><label>Na⁺ (mmol/L)</label><input type="number" value="${patientData.na}" onchange="patientData.na=this.value"></div>
+<div class="form-row"><label>K⁺ (mmol/L)</label><input type="number" step="0.1" value="${patientData.k}" onchange="patientData.k=this.value"></div>
+<div class="form-row"><label>Cl⁻ (mmol/L)</label><input type="number" value="${patientData.cl}" onchange="patientData.cl=this.value"></div>
+<div class="form-row"><label>HCO₃⁻ (mmol/L)</label><input type="number" value="${patientData.hco3}" onchange="patientData.hco3=this.value"></div>
+<div class="form-row"><label>pH artériel</label><input type="number" step="0.01" value="${patientData.ph}" onchange="patientData.ph=this.value" placeholder="7.40"></div>
+</div>
+<div class="detail-section"><h4>📊 Valeurs calculées</h4>
+<div id="calcValues"></div>
+<button class="tool-back" onclick="computePatient()" style="margin-top:12px">Calculer</button>
+</div>
+</div>`;
+}else{
+html+=`<div class="detail-section"><h4>📅 Timeline de prise en charge</h4>
+<div style="margin-bottom:16px;display:flex;gap:8px;flex-wrap:wrap">
+<input type="datetime-local" id="tlTime">
+<input type="text" id="tlEvent" placeholder="Événement..." style="flex:1;min-width:200px">
+<button class="tool-back" onclick="addTimeline()">Ajouter</button></div>
+<div id="timelineList">`;
+patientData.timeline.sort((a,b)=>new Date(a.time)-new Date(b.time)).forEach((t,i)=>{
+html+=`<div style="display:flex;gap:12px;padding:12px;border-left:3px solid var(--accent);margin-bottom:8px;background:var(--sec);border-radius:0 8px 8px 0">
+<strong style="white-space:nowrap">${new Date(t.time).toLocaleString('fr-FR',{hour:'2-digit',minute:'2-digit',day:'2-digit',month:'2-digit'})}</strong>
+<span style="flex:1">${t.event}</span>
+<button onclick="patientData.timeline.splice(${i},1);renderPatient()" style="background:none;border:none;cursor:pointer;color:var(--dim)">✕</button></div>`;
+});
+html+=`</div></div>`;
+}
+app.innerHTML=html;
+}
+
+function addTimeline(){
+const time=document.getElementById('tlTime')?.value;
+const event=document.getElementById('tlEvent')?.value;
+if(time&&event){patientData.timeline.push({time,event});renderPatient()}
+}
+
+function computePatient(){
+const el=document.getElementById('calcValues');if(!el)return;
+let html='';
+const na=parseFloat(patientData.na),cl=parseFloat(patientData.cl),hco3=parseFloat(patientData.hco3),k=parseFloat(patientData.k),ph=parseFloat(patientData.ph),glyc=parseFloat(patientData.glyc);
+if(na&&cl&&hco3){const ta=na-cl-hco3;html+=`<p><strong>Trou anionique:</strong> ${ta.toFixed(1)} mmol/L ${ta>16?'⚠️ Élevé':ta<8?'⚠️ Bas':'✓ Normal'}</p>`}
+if(na&&glyc){const nac=na+1.6*(glyc-1);html+=`<p><strong>Na⁺ corrigée:</strong> ${nac.toFixed(1)} mmol/L</p>`}
+if(k&&ph){const kc=k+0.6*(7.40-ph);html+=`<p><strong>K⁺ corrigée:</strong> ${kc.toFixed(1)} mmol/L</p>`}
+if(patientData.age&&patientData.poids&&patientData.creat){
+const age=parseFloat(patientData.age),w=parseFloat(patientData.poids),cr=parseFloat(patientData.creat);
+const cg=((140-age)*w)/(0.814*cr)*(patientData.sexe==='F'?0.85:1);
+html+=`<p><strong>Cockroft-Gault:</strong> ${cg.toFixed(1)} mL/min</p>`;
+}
+el.innerHTML=html||'<p style="color:var(--dim)">Renseignez les données ci-dessus puis cliquez Calculer</p>';
+}
+
+// ===================== TOOLS TAB =====================
+function renderTools(){
+const app=document.getElementById('app');
+if(!currentTool){
+app.innerHTML=`<div class="tools-menu">
+<div class="tool-card" onclick="currentTool='glasgow';renderTools()"><div class="tool-icon">🧠</div><div class="tool-name">Glasgow (GCS)</div></div>
+<div class="tool-card" onclick="currentTool='pss';renderTools()"><div class="tool-icon">📊</div><div class="tool-name">PSS (Severity Score)</div></div>
+<div class="tool-card" onclick="currentTool='rumack';renderTools()"><div class="tool-icon">📈</div><div class="tool-name">Nomogramme Rumack-Matthew</div></div>
+<div class="tool-card" onclick="currentTool='renal';renderTools()"><div class="tool-icon">🫘</div><div class="tool-name">Clairance rénale</div></div>
+<div class="tool-card" onclick="currentTool='posologie';renderTools()"><div class="tool-icon">💊</div><div class="tool-name">Calculateur posologique</div></div>
+<div class="tool-card" onclick="currentTool='glycemie';renderTools()"><div class="tool-icon">🩸</div><div class="tool-name">Convertisseur glycémie</div></div>
+<div class="tool-card" onclick="currentTool='natremie';renderTools()"><div class="tool-icon">🧪</div><div class="tool-name">Natrémie corrigée</div></div>
+<div class="tool-card" onclick="currentTool='kalemie';renderTools()"><div class="tool-icon">⚡</div><div class="tool-name">Kaliémie corrigée</div></div>
+<div class="tool-card" onclick="currentTool='osmolarite';renderTools()"><div class="tool-icon">💧</div><div class="tool-name">Osmolarité</div></div>
+<div class="tool-card" onclick="currentTool='trou_anionique';renderTools()"><div class="tool-icon">⚖️</div><div class="tool-name">Trou anionique</div></div>
+<div class="tool-card" onclick="currentTool='prescott';renderTools()"><div class="tool-icon">🏥</div><div class="tool-name">Critères pronostiques hépatiques</div></div>
+<div class="tool-card" onclick="currentTool='dose';renderTools()"><div class="tool-icon">🔢</div><div class="tool-name">Dose ingérée estimée</div></div>
+<div class="tool-card" onclick="currentTool='bsa';renderTools()"><div class="tool-icon">📐</div><div class="tool-name">Surface corporelle (Dubois)</div></div>
+</div>`;
+return;
+}
+let html=`<button class="tool-back" onclick="currentTool=null;renderTools()">← Retour aux outils</button><div class="detail-section" style="max-width:800px">`;
+switch(currentTool){
+case 'glasgow': html+=renderGlasgow();break;
+case 'pss': html+=renderPSS();break;
+case 'rumack': html+=renderRumack();break;
+case 'renal': html+=renderRenal();break;
+case 'posologie': html+=renderPosologie();break;
+case 'glycemie': html+=renderGlycemie();break;
+case 'natremie': html+=renderNatremie();break;
+case 'kalemie': html+=renderKalemie();break;
+case 'osmolarite': html+=renderOsmolarite();break;
+case 'trou_anionique': html+=renderTrouAnionique();break;
+case 'prescott': html+=renderPrescott();break;
+case 'dose': html+=renderDoseIngeree();break;
+case 'bsa': html+=renderBSA();break;
+}
+html+=`</div>`;
+app.innerHTML=html;
+if(currentTool==='rumack')setTimeout(drawRumackCanvas,50);
+}
+
+// --- GLASGOW ---
+let glasgowState={y:4,v:5,m:6};
+function renderGlasgow(){
+const yLabels=["","Nulle","À la douleur","À la demande","Spontanée"];
+const vLabels=["","Nulle","Incompréhensible","Inappropriée","Confuse","Orientée"];
+const mLabels=["","Nulle","Extension (décérébration)","Flexion (décortication)","Retrait","Orientée","Obéit aux ordres"];
+const total=glasgowState.y+glasgowState.v+glasgowState.m;
+let interp='';if(total<=8)interp='⚠️ Coma grave — intubation à considérer';else if(total<=12)interp='⚠️ Altération modérée';else interp='✓ Conscience normale ou sub-normale';
+let html=`<h4>🧠 Score de Glasgow (GCS): <span style="color:var(--accent);font-size:1.4rem">${total}/15</span></h4><p>${interp}</p>`;
+html+=`<div style="margin:16px 0"><strong>Yeux (Y=${glasgowState.y})</strong><div style="display:flex;gap:8px;margin:8px 0;flex-wrap:wrap">`;
+for(let i=1;i<=4;i++)html+=`<button class="${glasgowState.y===i?'tab active':'tab'}" onclick="glasgowState.y=${i};renderTools()">${i} — ${yLabels[i]}</button>`;
+html+=`</div></div>`;
+html+=`<div style="margin:16px 0"><strong>Verbale (V=${glasgowState.v})</strong><div style="display:flex;gap:8px;margin:8px 0;flex-wrap:wrap">`;
+for(let i=1;i<=5;i++)html+=`<button class="${glasgowState.v===i?'tab active':'tab'}" onclick="glasgowState.v=${i};renderTools()">${i} — ${vLabels[i]}</button>`;
+html+=`</div></div>`;
+html+=`<div style="margin:16px 0"><strong>Motrice (M=${glasgowState.m})</strong><div style="display:flex;gap:8px;margin:8px 0;flex-wrap:wrap">`;
+for(let i=1;i<=6;i++)html+=`<button class="${glasgowState.m===i?'tab active':'tab'}" onclick="glasgowState.m=${i};renderTools()">${i} — ${mLabels[i]}</button>`;
+html+=`</div></div>`;
+return html;
+}
+
+// --- PSS ---
+let pssState={neuro:0,cardio:0,respi:0,dig:0,renal:0,hepat:0,hemato:0,metab:0};
+function renderPSS(){
+const organs=[
+{key:'neuro',label:'Neurologique',levels:['Normal','Somnolence, ataxie','Coma réactif, convulsions brèves','Coma aréactif, EME, œdème cérébral']},
+{key:'cardio',label:'Cardiovasculaire',levels:['Normal','Troubles mineurs isolés','Hypotension, bradycardie symptomatique','Choc, arythmie sévère, ACR']},
+{key:'respi',label:'Respiratoire',levels:['Normal','Toux, bronchospasme léger','Dyspnée, hypoxémie','SDRA, insuffisance respiratoire, intubation']},
+{key:'dig',label:'Digestif',levels:['Normal','Nausées, vomissements','Hémorragie digestive modérée','Hémorragie massive, perforation']},
+{key:'renal',label:'Rénal',levels:['Normal','Protéinurie, hématurie','IRA oligurique, créat 2-5×N','IRA anurique, dialyse']},
+{key:'hepat',label:'Hépatique',levels:['Normal','Cytolyse modérée (<5N)','Cytolyse majeure (5-50N)','IHC, encéphalopathie hépatique']},
+{key:'hemato',label:'Hématologique',levels:['Normal','Troubles mineurs','Coagulopathie, anémie significative','CIVD, hémorragie menaçante']},
+{key:'metab',label:'Métabolique',levels:['Normal','Troubles acido-basiques légers','Acidose/alcalose sévère, dysnatrémie','Acidose réfractaire, hyperkaliémie menaçante']}
+];
+const maxPSS=Math.max(...Object.values(pssState));
+let interp='';if(maxPSS===0)interp='Aucune toxicité';else if(maxPSS===1)interp='Toxicité mineure';else if(maxPSS===2)interp='Toxicité modérée';else interp='⚠️ Toxicité sévère';
+let html=`<h4>📊 PSS (Poisoning Severity Score): <span style="color:var(--accent);font-size:1.2rem">Grade ${maxPSS} — ${interp}</span></h4>`;
+organs.forEach(o=>{
+html+=`<div style="margin:12px 0;padding:12px;background:var(--sec);border-radius:12px;cursor:pointer" onclick="pssState.${o.key}=(pssState.${o.key}+1)%4;renderTools()">
+<div style="display:flex;justify-content:space-between;align-items:center">
+<strong>${o.label}</strong><span class="class-badge" style="background:${pssState[o.key]===0?'#2b8a3e':pssState[o.key]===1?'#f08c00':pssState[o.key]===2?'#e8590c':'#c92a2a'};color:white">${pssState[o.key]}</span>
+</div><p style="font-size:.82rem;color:var(--dim);margin:6px 0 0">${o.levels[pssState[o.key]]}</p></div>`;
+});
+html+=`<button class="tool-back" onclick="pssState={neuro:0,cardio:0,respi:0,dig:0,renal:0,hepat:0,hemato:0,metab:0};renderTools()" style="margin-top:12px">Réinitialiser</button>`;
+return html;
+}
+
+// --- RUMACK-MATTHEW ---
+let rumackData={ingestionTime:'',dosageTime:'',concentration:'',unit:'ug_mL'};
+function renderRumack(){
+let html=`<h4>📈 Nomogramme de Rumack-Matthew (Paracétamol)</h4>
+<p style="font-size:.85rem;color:var(--dim)">Interpréter la concentration plasmatique de paracétamol en fonction du délai post-ingestion (4-24h). Zone au-dessus de la ligne = traitement NAC indiqué.</p>
+<div class="detail-grid" style="grid-template-columns:1fr 1fr;gap:16px">
+<div><label style="font-size:.85rem;font-weight:600">Heure d'ingestion estimée</label><input type="datetime-local" id="rumackIngestion" value="${rumackData.ingestionTime}" onchange="rumackData.ingestionTime=this.value;updateRumackDelta()" style="width:100%;margin-top:6px"></div>
+<div><label style="font-size:.85rem;font-weight:600">Heure du dosage</label><input type="datetime-local" id="rumackDosage" value="${rumackData.dosageTime}" onchange="rumackData.dosageTime=this.value;updateRumackDelta()" style="width:100%;margin-top:6px"></div>
+<div><label style="font-size:.85rem;font-weight:600">Concentration mesurée</label><input type="number" id="rumackConc" step="any" value="${rumackData.concentration}" onchange="rumackData.concentration=this.value;drawRumackCanvas()" placeholder="Valeur" style="width:100%;margin-top:6px"></div>
+<div><label style="font-size:.85rem;font-weight:600">Unité</label><select id="rumackUnit" onchange="rumackData.unit=this.value;drawRumackCanvas()" style="width:100%;margin-top:6px">
+<option value="ug_mL"${rumackData.unit==='ug_mL'?' selected':''}>µg/mL</option>
+<option value="umol_L"${rumackData.unit==='umol_L'?' selected':''}>µmol/L</option>
+<option value="mg_L"${rumackData.unit==='mg_L'?' selected':''}>mg/L</option>
+</select></div>
+</div>
+<div id="rumackDelta" style="margin:12px 0;padding:12px;background:var(--sec);border-radius:12px;font-weight:600;text-align:center"></div>
+<div id="rumackResult" style="margin:12px 0;padding:12px;background:var(--sec);border-radius:12px;text-align:center;display:none"></div>
+<div class="canvas-wrap" style="margin:16px 0;overflow-x:auto"><canvas id="rumackCanvas" width="700" height="450" style="width:100%;max-width:700px;height:auto"></canvas></div>
+<div style="display:flex;gap:8px;flex-wrap:wrap">
+<button class="tool-back" onclick="rumackData={ingestionTime:'',dosageTime:'',concentration:'',unit:'ug_mL'};renderTools()">Réinitialiser</button>
+<div style="font-size:.78rem;color:var(--dim);display:flex;align-items:center;gap:8px"><span style="display:inline-block;width:14px;height:14px;background:#e0383833;border:2px solid #e03838;border-radius:3px"></span>Toxique <span style="display:inline-block;width:14px;height:14px;background:#f0860033;border:2px solid #f08600;border-radius:3px"></span>Possible <span style="display:inline-block;width:14px;height:14px;background:#2b8a3e33;border:2px solid #2b8a3e;border-radius:3px"></span>Non toxique</div>
+</div>`;
+return html;
+}
+function updateRumackDelta(){
+const el=document.getElementById('rumackDelta');if(!el)return;
+if(rumackData.ingestionTime&&rumackData.dosageTime){
+const d=(new Date(rumackData.dosageTime)-new Date(rumackData.ingestionTime))/3600000;
+if(d<0)el.innerHTML='⚠️ L\'heure de dosage est antérieure à l\'ingestion';
+else if(d<4)el.innerHTML=`⏱ Δt = ${d.toFixed(1)}h — <span style="color:#f08c00">Dosage trop précoce (<4h), à recontrôler</span>`;
+else if(d>24)el.innerHTML=`⏱ Δt = ${d.toFixed(1)}h — <span style="color:#e03131">Hors nomogramme (>24h)</span>`;
+else el.innerHTML=`⏱ Δt = ${d.toFixed(1)}h post-ingestion`;
+}else el.innerHTML='Renseignez les deux horaires pour calculer le delta';
+drawRumackCanvas();
+}
+function drawRumackCanvas(){
+const canvas=document.getElementById('rumackCanvas');if(!canvas)return;
+const ctx=canvas.getContext('2d');
+const W=700,H=450;canvas.width=W;canvas.height=H;
+const isDark=document.documentElement.getAttribute('data-theme')==='dark';
+const txtColor=isDark?'#c1c2c5':'#343a40';
+const gridColor=isDark?'#373A40':'#dee2e6';
+const bgColor=isDark?'#1a1b1e':'#ffffff';
+ctx.fillStyle=bgColor;ctx.fillRect(0,0,W,H);
+const ml=80,mr=30,mt=30,mb=60;
+const pw=W-ml-mr,ph=H-mt-mb;
+const minH=4,maxH=24,minC=1,maxC=1000;
+const logMin=Math.log10(minC),logMax=Math.log10(maxC);
+function xPos(h){return ml+((h-minH)/(maxH-minH))*pw}
+function yPos(c){return mt+((logMax-Math.log10(c))/(logMax-logMin))*ph}
+// grid
+ctx.strokeStyle=gridColor;ctx.lineWidth=0.5;
+[1,2,5,10,20,50,100,200,500,1000].forEach(c=>{
+if(c>=minC&&c<=maxC){const y=yPos(c);ctx.beginPath();ctx.moveTo(ml,y);ctx.lineTo(W-mr,y);ctx.stroke();
+ctx.fillStyle=txtColor;ctx.font='11px system-ui';ctx.textAlign='right';ctx.fillText(c,ml-8,y+4)}});
+for(let h=4;h<=24;h+=2){const x=xPos(h);ctx.beginPath();ctx.moveTo(x,mt);ctx.lineTo(x,H-mb);ctx.stroke();
+ctx.fillStyle=txtColor;ctx.font='11px system-ui';ctx.textAlign='center';ctx.fillText(h+'h',x,H-mb+18)}
+// axes labels
+ctx.fillStyle=txtColor;ctx.font='bold 12px system-ui';
+ctx.textAlign='center';ctx.fillText('Heures post-ingestion',ml+pw/2,H-10);
+ctx.save();ctx.translate(16,mt+ph/2);ctx.rotate(-Math.PI/2);ctx.fillText('Concentration (µg/mL)',0,0);ctx.restore();
+// treatment lines — Rumack (200 line) and probable toxicity (150 line)
+const line200=[{h:4,c:200},{h:12,c:50},{h:24,c:6.25}];
+const line150=[{h:4,c:150},{h:12,c:37.5},{h:24,c:4.7}];
+// zone fills
+ctx.fillStyle='#e0383818';ctx.beginPath();ctx.moveTo(xPos(4),mt);ctx.lineTo(xPos(24),mt);ctx.lineTo(xPos(24),yPos(line200[2].c));
+ctx.lineTo(xPos(12),yPos(line200[1].c));ctx.lineTo(xPos(4),yPos(line200[0].c));ctx.closePath();ctx.fill();
+ctx.fillStyle='#f0860018';ctx.beginPath();ctx.moveTo(xPos(4),yPos(line200[0].c));ctx.lineTo(xPos(12),yPos(line200[1].c));ctx.lineTo(xPos(24),yPos(line200[2].c));
+ctx.lineTo(xPos(24),yPos(line150[2].c));ctx.lineTo(xPos(12),yPos(line150[1].c));ctx.lineTo(xPos(4),yPos(line150[0].c));ctx.closePath();ctx.fill();
+ctx.fillStyle='#2b8a3e18';ctx.beginPath();ctx.moveTo(xPos(4),yPos(line150[0].c));ctx.lineTo(xPos(12),yPos(line150[1].c));ctx.lineTo(xPos(24),yPos(line150[2].c));
+ctx.lineTo(xPos(24),H-mb);ctx.lineTo(xPos(4),H-mb);ctx.closePath();ctx.fill();
+// lines
+function drawLine(pts,color){ctx.strokeStyle=color;ctx.lineWidth=3;ctx.beginPath();pts.forEach((p,i)=>{const x=xPos(p.h),y=yPos(p.c);i===0?ctx.moveTo(x,y):ctx.lineTo(x,y)});ctx.stroke()}
+drawLine(line200,'#e03838');drawLine(line150,'#f08600');
+// legend box
+const lx=W-mr-180,ly=mt+8;
+ctx.fillStyle=isDark?'#25262bdd':'#ffffffdd';ctx.fillRect(lx,ly,170,70);ctx.strokeStyle=gridColor;ctx.strokeRect(lx,ly,170,70);
+ctx.font='bold 11px system-ui';ctx.fillStyle=txtColor;ctx.textAlign='left';ctx.fillText('Légende',lx+8,ly+16);
+ctx.strokeStyle='#e03838';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(lx+8,ly+32);ctx.lineTo(lx+35,ly+32);ctx.stroke();
+ctx.fillStyle=txtColor;ctx.font='11px system-ui';ctx.fillText('Toxicité probable (200)',lx+42,ly+36);
+ctx.strokeStyle='#f08600';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(lx+8,ly+52);ctx.lineTo(lx+35,ly+52);ctx.stroke();
+ctx.fillText('Toxicité possible (150)',lx+42,ly+56);
+// patient point
+if(rumackData.ingestionTime&&rumackData.dosageTime&&rumackData.concentration){
+const deltaH=(new Date(rumackData.dosageTime)-new Date(rumackData.ingestionTime))/3600000;
+let concUgMl=parseFloat(rumackData.concentration);
+if(rumackData.unit==='umol_L')concUgMl=concUgMl/6.614;
+if(rumackData.unit==='mg_L')concUgMl=concUgMl;
+if(deltaH>=4&&deltaH<=24&&concUgMl>=minC&&concUgMl<=maxC){
+const px=xPos(deltaH),py=yPos(concUgMl);
+// halo
+ctx.beginPath();ctx.arc(px,py,14,0,2*Math.PI);ctx.fillStyle=isDark?'rgba(76,110,245,0.25)':'rgba(76,110,245,0.2)';ctx.fill();
+// dot
+ctx.beginPath();ctx.arc(px,py,7,0,2*Math.PI);ctx.fillStyle='#4c6ef5';ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.stroke();
+// label
+ctx.fillStyle=txtColor;ctx.font='bold 11px system-ui';ctx.textAlign='left';ctx.fillText(`${concUgMl.toFixed(1)} µg/mL @ ${deltaH.toFixed(1)}h`,px+14,py-4);
+// interpretation
+const c200At=200*Math.pow(6.25/200,(deltaH-4)/20);
+const c150At=150*Math.pow(4.7/150,(deltaH-4)/20);
+const res=document.getElementById('rumackResult');
+if(res){res.style.display='block';
+if(concUgMl>=c200At)res.innerHTML=`<span style="color:#e03131;font-weight:700">⚠️ ZONE TOXIQUE — NAC indiqué</span><br><small>Concentration au-dessus de la ligne 200 (${c200At.toFixed(1)} µg/mL à ${deltaH.toFixed(1)}h)</small>`;
+else if(concUgMl>=c150At)res.innerHTML=`<span style="color:#f08c00;font-weight:700">⚠ TOXICITÉ POSSIBLE — NAC à considérer</span><br><small>Concentration entre les lignes 150-200</small>`;
+else res.innerHTML=`<span style="color:#2b8a3e;font-weight:700">✓ Zone non toxique</span><br><small>Concentration sous la ligne 150 (${c150At.toFixed(1)} µg/mL à ${deltaH.toFixed(1)}h)</small>`}
+}
+}
+}
+
+// --- RENAL ---
+function renderRenal(){
+return `<h4>🫘 Clairance rénale</h4>
+<div class="detail-grid" style="grid-template-columns:1fr 1fr;gap:16px">
+<div><label style="font-size:.85rem;font-weight:600">Âge</label><input type="number" id="renalAge" placeholder="ans" style="width:100%;margin-top:6px"></div>
+<div><label style="font-size:.85rem;font-weight:600">Poids (kg)</label><input type="number" id="renalPoids" placeholder="kg" style="width:100%;margin-top:6px"></div>
+<div><label style="font-size:.85rem;font-weight:600">Créatinine (µmol/L)</label><input type="number" id="renalCreat" placeholder="µmol/L" style="width:100%;margin-top:6px"></div>
+<div><label style="font-size:.85rem;font-weight:600">Sexe</label><select id="renalSexe" style="width:100%;margin-top:6px"><option value="M">Homme</option><option value="F">Femme</option></select></div>
+<div><label style="font-size:.85rem;font-weight:600">Ethnie noire</label><select id="renalEthnie" style="width:100%;margin-top:6px"><option value="non">Non</option><option value="oui">Oui</option></select></div>
+</div>
+<button class="tool-back" onclick="calcRenal()" style="margin-top:16px">Calculer</button>
+<div id="renalResult" style="margin-top:16px"></div>`;
+}
+function calcRenal(){
+const age=parseFloat(document.getElementById('renalAge')?.value),poids=parseFloat(document.getElementById('renalPoids')?.value),creat=parseFloat(document.getElementById('renalCreat')?.value);
+const sexe=document.getElementById('renalSexe')?.value,ethnie=document.getElementById('renalEthnie')?.value;
+const el=document.getElementById('renalResult');if(!el)return;
+if(!age||!poids||!creat){el.innerHTML='<p style="color:#e03131">Veuillez remplir tous les champs</p>';return}
+const cg=((140-age)*poids)/(0.814*creat)*(sexe==='F'?0.85:1);
+const creatMg=creat/88.4;
+let ckd;
+if(sexe==='F'){ckd=144*Math.pow(Math.min(creatMg/0.7,1),-0.329)*Math.pow(Math.max(creatMg/0.7,1),-1.209)*Math.pow(0.9938,age)*(ethnie==='oui'?1.159:1)}
+else{ckd=141*Math.pow(Math.min(creatMg/0.9,1),-0.411)*Math.pow(Math.max(creatMg/0.9,1),-1.209)*Math.pow(0.9938,age)*(ethnie==='oui'?1.159:1)}
+let html=`<div class="detail-grid" style="grid-template-columns:1fr 1fr"><div class="detail-section"><h4>Cockcroft-Gault</h4><p style="font-size:1.3rem;font-weight:700;color:var(--accent)">${cg.toFixed(1)} mL/min</p>`;
+if(cg>=90)html+='<p style="color:#2b8a3e">✓ Fonction rénale normale</p>';else if(cg>=60)html+='<p style="color:#f08c00">IRC légère</p>';else if(cg>=30)html+='<p style="color:#e8590c">IRC modérée</p>';else if(cg>=15)html+='<p style="color:#e03131">IRC sévère</p>';else html+='<p style="color:#c92a2a">⚠️ IRC terminale</p>';
+html+=`</div><div class="detail-section"><h4>CKD-EPI (2009)</h4><p style="font-size:1.3rem;font-weight:700;color:var(--accent)">${ckd.toFixed(1)} mL/min/1.73m²</p>`;
+if(ckd>=90)html+='<p style="color:#2b8a3e">✓ G1 — Normal</p>';else if(ckd>=60)html+='<p style="color:#f08c00">G2 — Légèrement diminué</p>';else if(ckd>=45)html+='<p style="color:#e8590c">G3a — Modérément diminué</p>';else if(ckd>=30)html+='<p style="color:#e8590c">G3b — Modérément à sévèrement diminué</p>';else if(ckd>=15)html+='<p style="color:#e03131">G4 — Sévèrement diminué</p>';else html+='<p style="color:#c92a2a">G5 — Insuffisance rénale</p>';
+html+=`</div></div>`;el.innerHTML=html;
+}
+
+// --- POSOLOGIE ---
+function renderPosologie(){
+return `<h4>💊 Calculateur posologique</h4>
+<div class="detail-grid" style="grid-template-columns:1fr 1fr;gap:16px">
+<div><label style="font-size:.85rem;font-weight:600">Poids (kg)</label><input type="number" id="posoWeight" placeholder="kg" style="width:100%;margin-top:6px"></div>
+<div><label style="font-size:.85rem;font-weight:600">Dose (mg/kg)</label><input type="number" id="posoDose" step="any" placeholder="mg/kg" style="width:100%;margin-top:6px"></div>
+</div>
+<button class="tool-back" onclick="calcPoso()" style="margin-top:16px">Calculer</button>
+<div id="posoResult" style="margin-top:16px"></div>`;
+}
+function calcPoso(){
+const w=parseFloat(document.getElementById('posoWeight')?.value),d=parseFloat(document.getElementById('posoDose')?.value);
+const el=document.getElementById('posoResult');if(!el)return;
+if(!w||!d){el.innerHTML='<p style="color:#e03131">Remplir poids et dose</p>';return}
+el.innerHTML=`<div class="detail-section"><p style="font-size:1.3rem;font-weight:700;color:var(--accent)">${(w*d).toFixed(1)} mg</p><p>pour un patient de ${w} kg à ${d} mg/kg</p></div>`;
+}
+
+// --- GLYCEMIE ---
+function renderGlycemie(){
+return `<h4>🩸 Convertisseur glycémie</h4>
+<p style="font-size:.85rem;color:var(--dim)">Facteur de conversion: 1 g/L = 5.55 mmol/L</p>
+<div class="detail-grid" style="grid-template-columns:1fr auto 1fr;gap:16px;align-items:end">
+<div><label style="font-size:.85rem;font-weight:600">g/L</label><input type="number" id="glycGL" step="any" placeholder="g/L" style="width:100%;margin-top:6px" oninput="document.getElementById('glycMmol').value=this.value?(this.value*5.55).toFixed(2):''"></div>
+<div style="font-size:1.5rem;padding-bottom:8px">⇄</div>
+<div><label style="font-size:.85rem;font-weight:600">mmol/L</label><input type="number" id="glycMmol" step="any" placeholder="mmol/L" style="width:100%;margin-top:6px" oninput="document.getElementById('glycGL').value=this.value?(this.value/5.55).toFixed(2):''"></div>
+</div>
+<div style="margin-top:16px;padding:12px;background:var(--sec);border-radius:12px;font-size:.85rem">
+<p><strong>Valeurs normales:</strong> 0.70–1.10 g/L (3.9–6.1 mmol/L) à jeun</p>
+<p><strong>Hypoglycémie:</strong> < 0.50 g/L (2.8 mmol/L)</p>
+<p><strong>Hyperglycémie:</strong> > 1.26 g/L (7.0 mmol/L) à jeun</p>
+</div>`;
+}
+
+// --- NATREMIE CORRIGEE ---
+function renderNatremie(){
+return `<h4>🧪 Natrémie corrigée (Katz)</h4>
+<p style="font-size:.85rem;color:var(--dim)">Na⁺ corr = Na⁺ mesurée + 1.6 × (glycémie [g/L] − 1)<br>Corrige l'effet dilutionnel de l'hyperglycémie sur la natrémie.</p>
+<div class="detail-grid" style="grid-template-columns:1fr 1fr;gap:16px">
+<div><label style="font-size:.85rem;font-weight:600">Na⁺ mesurée (mmol/L)</label><input type="number" id="naVal" step="any" placeholder="mmol/L" style="width:100%;margin-top:6px"></div>
+<div><label style="font-size:.85rem;font-weight:600">Glycémie (g/L)</label><input type="number" id="naGlyc" step="any" placeholder="g/L" style="width:100%;margin-top:6px"></div>
+</div>
+<button class="tool-back" onclick="calcNatremie()" style="margin-top:16px">Calculer</button>
+<div id="naResult" style="margin-top:16px"></div>`;
+}
+function calcNatremie(){
+const na=parseFloat(document.getElementById('naVal')?.value),glyc=parseFloat(document.getElementById('naGlyc')?.value);
+const el=document.getElementById('naResult');if(!el)return;
+if(!na||!glyc){el.innerHTML='<p style="color:#e03131">Remplir tous les champs</p>';return}
+const corr=na+1.6*(glyc-1);
+let interp='';if(corr<135)interp='⚠️ Hyponatrémie';else if(corr>145)interp='⚠️ Hypernatrémie';else interp='✓ Normal';
+el.innerHTML=`<div class="detail-section"><p style="font-size:1.3rem;font-weight:700;color:var(--accent)">${corr.toFixed(1)} mmol/L</p><p>${interp}</p><p style="font-size:.82rem;color:var(--dim)">Correction: +${(1.6*(glyc-1)).toFixed(1)} mmol/L pour glycémie à ${glyc} g/L</p></div>`;
+}
+
+// --- KALEMIE CORRIGEE ---
+function renderKalemie(){
+return `<h4>⚡ Kaliémie corrigée (pH)</h4>
+<p style="font-size:.85rem;color:var(--dim)">K⁺ corr = K⁺ mesurée + 0.6 × (7.40 − pH)<br>Corrige le transfert intra/extracellulaire du potassium lié au pH.</p>
+<div class="detail-grid" style="grid-template-columns:1fr 1fr;gap:16px">
+<div><label style="font-size:.85rem;font-weight:600">K⁺ mesurée (mmol/L)</label><input type="number" id="kVal" step="any" placeholder="mmol/L" style="width:100%;margin-top:6px"></div>
+<div><label style="font-size:.85rem;font-weight:600">pH artériel</label><input type="number" id="kPH" step="any" placeholder="7.40" style="width:100%;margin-top:6px"></div>
+</div>
+<button class="tool-back" onclick="calcKalemie()" style="margin-top:16px">Calculer</button>
+<div id="kResult" style="margin-top:16px"></div>`;
+}
+function calcKalemie(){
+const k=parseFloat(document.getElementById('kVal')?.value),ph=parseFloat(document.getElementById('kPH')?.value);
+const el=document.getElementById('kResult');if(!el)return;
+if(!k||!ph){el.innerHTML='<p style="color:#e03131">Remplir tous les champs</p>';return}
+const corr=k+0.6*(7.40-ph);
+let interp='';if(corr<3.5)interp='⚠️ Hypokaliémie';else if(corr>5.0)interp='⚠️ Hyperkaliémie';else interp='✓ Normal';
+const corrVal=(0.6*(7.40-ph));const corrSign=corrVal>0?"+":"";el.innerHTML=`<div class="detail-section"><p style="font-size:1.3rem;font-weight:700;color:var(--accent)">` +corr.toFixed(2)+ ` mmol/L</p><p>` +interp+ `</p><p style="font-size:.82rem;color:var(--dim)">Correction: ` +corrSign+corrVal.toFixed(2)+ ` mmol/L pour pH ` +ph+ `</p></div>`;
+}
+
+// --- OSMOLARITE ---
+function renderOsmolarite(){
+return `<h4>💧 Osmolarité</h4>
+<div style="margin-bottom:20px"><h5 style="margin:0 0 12px">Osmolarité plasmatique</h5>
+<p style="font-size:.85rem;color:var(--dim)">Osm = 2×Na + Glycémie/0.18 + Urée/0.06</p>
+<div class="detail-grid" style="grid-template-columns:1fr 1fr 1fr;gap:12px">
+<div><label style="font-size:.85rem;font-weight:600">Na⁺ (mmol/L)</label><input type="number" id="osmNa" step="any" style="width:100%;margin-top:6px"></div>
+<div><label style="font-size:.85rem;font-weight:600">Glycémie (g/L)</label><input type="number" id="osmGlyc" step="any" style="width:100%;margin-top:6px"></div>
+<div><label style="font-size:.85rem;font-weight:600">Urée (g/L)</label><input type="number" id="osmUree" step="any" style="width:100%;margin-top:6px"></div>
+</div>
+<button class="tool-back" onclick="calcOsmPlasma()" style="margin-top:12px">Calculer osmolarité plasmatique</button>
+<div id="osmPlasmaResult" style="margin-top:12px"></div>
+</div>
+<div><h5 style="margin:0 0 12px">Osmolarité urinaire</h5>
+<p style="font-size:.85rem;color:var(--dim)">Osm urinaire = 2×(Na_u + K_u) + Urée_u/0.06 + Glucose_u/0.18</p>
+<div class="detail-grid" style="grid-template-columns:1fr 1fr 1fr 1fr;gap:12px">
+<div><label style="font-size:.85rem;font-weight:600">Na⁺ᵤ (mmol/L)</label><input type="number" id="osmNaU" step="any" style="width:100%;margin-top:6px"></div>
+<div><label style="font-size:.85rem;font-weight:600">K⁺ᵤ (mmol/L)</label><input type="number" id="osmKU" step="any" style="width:100%;margin-top:6px"></div>
+<div><label style="font-size:.85rem;font-weight:600">Urée_u (g/L)</label><input type="number" id="osmUreeU" step="any" style="width:100%;margin-top:6px"></div>
+<div><label style="font-size:.85rem;font-weight:600">Glucose_u (g/L)</label><input type="number" id="osmGlucU" step="any" style="width:100%;margin-top:6px"></div>
+</div>
+<button class="tool-back" onclick="calcOsmUrine()" style="margin-top:12px">Calculer osmolarité urinaire</button>
+<div id="osmUrineResult" style="margin-top:12px"></div>
+</div>`;
+}
+function calcOsmPlasma(){
+const na=parseFloat(document.getElementById('osmNa')?.value),glyc=parseFloat(document.getElementById('osmGlyc')?.value),uree=parseFloat(document.getElementById('osmUree')?.value);
+const el=document.getElementById('osmPlasmaResult');if(!el)return;
+if(!na){el.innerHTML='<p style="color:#e03131">Na⁺ requis</p>';return}
+const osm=2*na+(glyc?glyc/0.18:0)+(uree?uree/0.06:0);
+const trou=osm-(2*na+(glyc?glyc/0.18:0)+(uree?uree/0.06:0));
+let interp='';if(osm<280)interp='⚠️ Hypo-osmolaire';else if(osm>300)interp='⚠️ Hyperosmolaire';else interp='✓ Normal (280-300)';
+el.innerHTML=`<div class="detail-section"><p style="font-size:1.3rem;font-weight:700;color:var(--accent)">${osm.toFixed(0)} mOsm/L</p><p>${interp}</p></div>`;
+}
+function calcOsmUrine(){
+const naU=parseFloat(document.getElementById('osmNaU')?.value)||0,kU=parseFloat(document.getElementById('osmKU')?.value)||0;
+const ureeU=parseFloat(document.getElementById('osmUreeU')?.value)||0,glucU=parseFloat(document.getElementById('osmGlucU')?.value)||0;
+const el=document.getElementById('osmUrineResult');if(!el)return;
+const osm=2*(naU+kU)+(ureeU/0.06)+(glucU/0.18);
+el.innerHTML=`<div class="detail-section"><p style="font-size:1.3rem;font-weight:700;color:var(--accent)">${osm.toFixed(0)} mOsm/L</p><p>${osm<100?'Urines diluées':osm>800?'Urines très concentrées':'Urines concentrées'}</p></div>`;
+}
+
+// --- TROU ANIONIQUE ---
+function renderTrouAnionique(){
+return `<h4>⚖️ Trou anionique</h4>
+<div style="margin-bottom:20px"><h5>Trou anionique sanguin</h5>
+<p style="font-size:.85rem;color:var(--dim)">TA = Na⁺ − Cl⁻ − HCO₃⁻ (normale 8-16 mmol/L, ou 12±4 avec K⁺)</p>
+<div class="detail-grid" style="grid-template-columns:1fr 1fr 1fr;gap:12px">
+<div><label style="font-size:.85rem;font-weight:600">Na⁺ (mmol/L)</label><input type="number" id="taNa" step="any" style="width:100%;margin-top:6px"></div>
+<div><label style="font-size:.85rem;font-weight:600">Cl⁻ (mmol/L)</label><input type="number" id="taCl" step="any" style="width:100%;margin-top:6px"></div>
+<div><label style="font-size:.85rem;font-weight:600">HCO₃⁻ (mmol/L)</label><input type="number" id="taHCO3" step="any" style="width:100%;margin-top:6px"></div>
+</div>
+<div class="detail-grid" style="grid-template-columns:1fr 1fr;gap:12px;margin-top:8px">
+<div><label style="font-size:.85rem;font-weight:600">Albumine (g/L) — optionnel</label><input type="number" id="taAlb" step="any" placeholder="40" style="width:100%;margin-top:6px"></div>
+<div><label style="font-size:.85rem;font-weight:600">Lactates (mmol/L) — optionnel</label><input type="number" id="taLact" step="any" style="width:100%;margin-top:6px"></div>
+</div>
+<button class="tool-back" onclick="calcTASang()" style="margin-top:12px">Calculer TA sanguin</button>
+<div id="taSangResult" style="margin-top:12px"></div>
+</div>
+<div><h5>Trou anionique urinaire</h5>
+<p style="font-size:.85rem;color:var(--dim)">TA urinaire = Na⁺ᵤ + K⁺ᵤ − Cl⁻ᵤ (évalue l'ammoniurie)</p>
+<div class="detail-grid" style="grid-template-columns:1fr 1fr 1fr;gap:12px">
+<div><label style="font-size:.85rem;font-weight:600">Na⁺ᵤ (mmol/L)</label><input type="number" id="taUNa" step="any" style="width:100%;margin-top:6px"></div>
+<div><label style="font-size:.85rem;font-weight:600">K⁺ᵤ (mmol/L)</label><input type="number" id="taUK" step="any" style="width:100%;margin-top:6px"></div>
+<div><label style="font-size:.85rem;font-weight:600">Cl⁻ᵤ (mmol/L)</label><input type="number" id="taUCl" step="any" style="width:100%;margin-top:6px"></div>
+</div>
+<button class="tool-back" onclick="calcTAUrine()" style="margin-top:12px">Calculer TA urinaire</button>
+<div id="taUrineResult" style="margin-top:12px"></div>
+</div>`;
+}
+function calcTASang(){
+const na=parseFloat(document.getElementById('taNa')?.value),cl=parseFloat(document.getElementById('taCl')?.value),hco3=parseFloat(document.getElementById('taHCO3')?.value);
+const alb=parseFloat(document.getElementById('taAlb')?.value)||40,lact=parseFloat(document.getElementById('taLact')?.value)||0;
+const el=document.getElementById('taSangResult');if(!el)return;
+if(!na||!cl||!hco3){el.innerHTML='<p style="color:#e03131">Na⁺, Cl⁻ et HCO₃⁻ requis</p>';return}
+const ta=na-cl-hco3;
+const taCorr=ta+2.5*(4-alb/10);
+let html=`<div class="detail-section"><p style="font-size:1.3rem;font-weight:700;color:var(--accent)">TA = ${ta.toFixed(1)} mmol/L</p>`;
+if(alb!==40)html+=`<p>TA corrigé (albumine): ${taCorr.toFixed(1)} mmol/L</p>`;
+const effectiveTA=alb!==40?taCorr:ta;
+if(effectiveTA>16){
+html+=`<p style="color:#e03131;font-weight:600">⚠️ Trou anionique élevé — acidose métabolique à TA augmenté</p>`;
+html+=`<div style="margin-top:12px;padding:12px;background:var(--bg);border-radius:8px"><strong>Orientation étiologique (MUDPILES):</strong><br>
+• <strong>M</strong>éthanol<br>• <strong>U</strong>rémie<br>• <strong>D</strong>iabète (acidocétose)<br>• <strong>P</strong>ropylène glycol / <strong>P</strong>aracétamol<br>• <strong>I</strong>soniazide / <strong>I</strong>ron (fer)<br>• <strong>L</strong>actates${lact?` (${lact} mmol/L${lact>2?' ⚠️':''})`:''}
+<br>• <strong>E</strong>thylène glycol<br>• <strong>S</strong>alicylés</div>`;
+}else if(effectiveTA<8){
+html+=`<p style="color:#f08c00">TA bas — évoquer hypoalbuminémie, intoxication au lithium ou bromures</p>`;
+}else html+=`<p style="color:#2b8a3e">✓ Normal</p>`;
+html+=`</div>`;el.innerHTML=html;
+}
+function calcTAUrine(){
+const naU=parseFloat(document.getElementById('taUNa')?.value),kU=parseFloat(document.getElementById('taUK')?.value),clU=parseFloat(document.getElementById('taUCl')?.value);
+const el=document.getElementById('taUrineResult');if(!el)return;
+if(!naU||!kU||!clU){el.innerHTML='<p style="color:#e03131">Tous les champs sont requis</p>';return}
+const tau=naU+kU-clU;
+let html=`<div class="detail-section"><p style="font-size:1.3rem;font-weight:700;color:var(--accent)">TA urinaire = ${tau.toFixed(1)} mmol/L</p>`;
+if(tau<0)html+=`<p style="color:#2b8a3e">✓ Négatif — réponse rénale appropriée (ammoniurie conservée). Oriente vers une perte digestive de bicarbonates (diarrhée).</p>`;
+else html+=`<p style="color:#e03131">⚠️ Positif — défaut d'ammoniurie. Oriente vers une acidose tubulaire rénale.</p>`;
+html+=`</div>`;el.innerHTML=html;
+}
+
+// --- PRESCOTT / CRITERES PRONOSTIQUES HEPATIQUES ---
+function renderPrescott(){
+return `<h4>🏥 Critères pronostiques hépatiques</h4>
+<div style="margin-bottom:24px;padding:16px;background:var(--sec);border-radius:12px">
+<h5 style="margin:0 0 12px">Score de Prescott (Paracétamol)</h5>
+<p style="font-size:.85rem;color:var(--dim)">Évalue la gravité de l'hépatite au paracétamol et l'indication de transplantation.</p>
+<div class="detail-grid" style="grid-template-columns:1fr 1fr 1fr;gap:12px">
+<div><label style="font-size:.85rem;font-weight:600">pH artériel</label><input type="number" id="prescottPH" step="any" placeholder="7.40" style="width:100%;margin-top:6px"></div>
+<div><label style="font-size:.85rem;font-weight:600">TP (%)</label><input type="number" id="prescottTP" step="any" style="width:100%;margin-top:6px"></div>
+<div><label style="font-size:.85rem;font-weight:600">Créatinine (µmol/L)</label><input type="number" id="prescottCreat" step="any" style="width:100%;margin-top:6px"></div>
+<div><label style="font-size:.85rem;font-weight:600">Encéphalopathie (grade 0-4)</label><select id="prescottEnceph" style="width:100%;margin-top:6px"><option value="0">0 — Absente</option><option value="1">1 — Confusion légère</option><option value="2">2 — Somnolence</option><option value="3">3 — Stupeur</option><option value="4">4 — Coma</option></select></div>
+<div><label style="font-size:.85rem;font-weight:600">Lactates (mmol/L)</label><input type="number" id="prescottLact" step="any" style="width:100%;margin-top:6px"></div>
+</div>
+<button class="tool-back" onclick="calcPrescott()" style="margin-top:12px">Évaluer Prescott / King's College</button>
+<div id="prescottResult" style="margin-top:12px"></div>
+</div>
+<div style="padding:16px;background:var(--sec);border-radius:12px">
+<h5 style="margin:0 0 12px">Critères de Clichy-Villejuif (IHC non paracétamol)</h5>
+<p style="font-size:.85rem;color:var(--dim)">Indication de transplantation hépatique en urgence (IHC non paracétamol).</p>
+<div class="detail-grid" style="grid-template-columns:1fr 1fr 1fr;gap:12px">
+<div><label style="font-size:.85rem;font-weight:600">Facteur V (%)</label><input type="number" id="clichyFV" step="any" style="width:100%;margin-top:6px"></div>
+<div><label style="font-size:.85rem;font-weight:600">Âge</label><input type="number" id="clichyAge" style="width:100%;margin-top:6px"></div>
+<div><label style="font-size:.85rem;font-weight:600">Encéphalopathie</label><select id="clichyEnceph" style="width:100%;margin-top:6px"><option value="non">Non (grade 0-2)</option><option value="oui">Oui (grade 3-4)</option></select></div>
+</div>
+<button class="tool-back" onclick="calcClichy()" style="margin-top:12px">Évaluer Clichy-Villejuif</button>
+<div id="clichyResult" style="margin-top:12px"></div>
+</div>`;
+}
+function calcPrescott(){
+const ph=parseFloat(document.getElementById('prescottPH')?.value),tp=parseFloat(document.getElementById('prescottTP')?.value);
+const creat=parseFloat(document.getElementById('prescottCreat')?.value),enceph=parseInt(document.getElementById('prescottEnceph')?.value);
+const lact=parseFloat(document.getElementById('prescottLact')?.value);
+const el=document.getElementById('prescottResult');if(!el)return;
+let criteria=[];let transplant=false;
+if(ph&&ph<7.30){criteria.push('pH < 7.30 ⚠️');transplant=true}
+if(lact&&lact>3.5){criteria.push(`Lactates ${lact} mmol/L > 3.5 ⚠️`)}
+if(tp&&creat&&enceph>=3){
+if(tp<10||(tp<20&&creat>300)){criteria.push('TP bas + créat élevée + encéphalopathie grade ≥3');transplant=true}
+}
+if(enceph>=3)criteria.push('Encéphalopathie grade ≥3');
+let html=`<div class="detail-section">`;
+if(transplant)html+=`<p style="color:#e03131;font-weight:700;font-size:1.1rem">⚠️ CRITÈRES DE KING'S COLLEGE ATTEINTS — Transplantation à discuter</p>`;
+else html+=`<p style="color:#2b8a3e;font-weight:600">Critères de King's College non atteints actuellement</p>`;
+html+=`<p style="font-size:.85rem;color:var(--dim);margin-top:8px"><strong>Critères King's College (paracétamol):</strong><br>
+• pH < 7.30 après remplissage (critère suffisant à lui seul)<br>
+OU les 3 critères suivants ensemble:<br>
+• TP < 10% (INR > 6.5) ET<br>
+• Créatinine > 300 µmol/L ET<br>
+• Encéphalopathie grade ≥ 3</p>`;
+if(criteria.length)html+=`<div style="margin-top:12px"><strong>Critères retrouvés:</strong><br>${criteria.map(c=>`• ${c}`).join('<br>')}</div>`;
+html+=`</div>`;el.innerHTML=html;
+}
+function calcClichy(){
+const fv=parseFloat(document.getElementById('clichyFV')?.value),age=parseFloat(document.getElementById('clichyAge')?.value),enceph=document.getElementById('clichyEnceph')?.value;
+const el=document.getElementById('clichyResult');if(!el)return;
+if(!fv||!age){el.innerHTML='<p style="color:#e03131">Facteur V et âge requis</p>';return}
+let transplant=false;
+if(enceph==='oui'&&fv<20)transplant=true;
+if(enceph!=='oui'&&fv<30&&age<30)transplant=true;
+let html=`<div class="detail-section">`;
+if(transplant)html+=`<p style="color:#e03131;font-weight:700;font-size:1.1rem">⚠️ CRITÈRES DE CLICHY ATTEINTS — Transplantation en urgence</p>`;
+else html+=`<p style="color:#2b8a3e;font-weight:600">Critères de Clichy non atteints</p>`;
+html+=`<p style="font-size:.85rem;color:var(--dim);margin-top:8px"><strong>Critères de Clichy-Villejuif:</strong><br>
+• Encéphalopathie grade 3-4 + Facteur V < 20%<br>
+OU<br>
+• Âge < 30 ans + Facteur V < 30% (même sans encéphalopathie sévère)</p>`;
+html+=`</div>`;el.innerHTML=html;
+}
+
+// --- DOSE INGEREE ESTIMEE ---
+function renderDoseIngeree(){
+return `<h4>🔢 Dose ingérée estimée</h4>
+<p style="font-size:.85rem;color:var(--dim)">Calcule la dose totale et la dose rapportée au poids.</p>
+<div class="detail-grid" style="grid-template-columns:1fr 1fr 1fr;gap:16px">
+<div><label style="font-size:.85rem;font-weight:600">Nombre de comprimés</label><input type="number" id="doseNb" style="width:100%;margin-top:6px"></div>
+<div><label style="font-size:.85rem;font-weight:600">Dosage par comprimé (mg)</label><input type="number" id="doseMg" step="any" style="width:100%;margin-top:6px"></div>
+<div><label style="font-size:.85rem;font-weight:600">Poids du patient (kg)</label><input type="number" id="doseWeight" step="any" style="width:100%;margin-top:6px"></div>
+</div>
+<button class="tool-back" onclick="calcDose()" style="margin-top:16px">Calculer</button>
+<div id="doseResult" style="margin-top:16px"></div>`;
+}
+function calcDose(){
+const nb=parseFloat(document.getElementById('doseNb')?.value),mg=parseFloat(document.getElementById('doseMg')?.value),w=parseFloat(document.getElementById('doseWeight')?.value);
+const el=document.getElementById('doseResult');if(!el)return;
+if(!nb||!mg){el.innerHTML='<p style="color:#e03131">Nombre et dosage requis</p>';return}
+const total=nb*mg;
+const totalDisplay=total>=1000?(total/1000).toFixed(2)+" g":total.toFixed(1)+" mg";
+let html='<div class="detail-section"><p style="font-size:1.3rem;font-weight:700;color:var(--accent)">'+totalDisplay+'</p><p>Dose totale estimée ('+nb+' cp × '+mg+' mg)</p>';
+if(w){html+=`<p style="margin-top:8px;font-size:1.1rem;font-weight:600">${(total/w).toFixed(1)} mg/kg</p>`}
+html+=`</div>`;el.innerHTML=html;
+}
+
+// --- BSA DUBOIS ---
+function renderBSA(){
+return `<h4>📐 Surface corporelle (Dubois)</h4>
+<p style="font-size:.85rem;color:var(--dim)">SC = 0.007184 × Poids⁰·⁴²⁵ × Taille⁰·⁷²⁵</p>
+<div class="detail-grid" style="grid-template-columns:1fr 1fr;gap:16px">
+<div><label style="font-size:.85rem;font-weight:600">Poids (kg)</label><input type="number" id="bsaWeight" step="any" placeholder="kg" style="width:100%;margin-top:6px"></div>
+<div><label style="font-size:.85rem;font-weight:600">Taille (cm)</label><input type="number" id="bsaHeight" step="any" placeholder="cm" style="width:100%;margin-top:6px"></div>
+</div>
+<button class="tool-back" onclick="calcBSA()" style="margin-top:16px">Calculer</button>
+<div id="bsaResult" style="margin-top:16px"></div>`;
+}
+function calcBSA(){
+const w=parseFloat(document.getElementById('bsaWeight')?.value),h=parseFloat(document.getElementById('bsaHeight')?.value);
+const el=document.getElementById('bsaResult');if(!el)return;
+if(!w||!h){el.innerHTML='<p style="color:#e03131">Poids et taille requis</p>';return}
+const bsa=0.007184*Math.pow(w,0.425)*Math.pow(h,0.725);
+el.innerHTML=`<div class="detail-section"><p style="font-size:1.3rem;font-weight:700;color:var(--accent)">${bsa.toFixed(3)} m²</p><p>Surface corporelle pour ${w} kg / ${h} cm</p><p style="font-size:.82rem;color:var(--dim)">Valeur normale adulte: 1.6-2.0 m²</p></div>`;
+}
+
+// ===================== RENDER ALL + INIT =====================
+function renderAll(){
+const tabs=document.querySelectorAll('.nav-tab');
+tabs.forEach(t=>t.classList.toggle('active',t.dataset.tab===currentTab));
+switch(currentTab){
+case 'molecules':renderMolecules();break;
+case 'toxidromes':renderToxidromes();break;
+case 'antidotes':renderAntidotes();break;
+case 'patient':renderPatient();break;
+case 'outils':renderTools();break;
+}
+}
+
+function init(){
+document.querySelectorAll('.nav-tab').forEach(t=>{
+t.addEventListener('click',()=>{currentTab=t.dataset.tab;currentTool=null;renderAll()});
+});
+renderAll();
+}
+
+document.addEventListener('DOMContentLoaded',init);
+</script>
+</body>
+</html>
