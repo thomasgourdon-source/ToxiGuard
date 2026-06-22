@@ -1,38 +1,34 @@
 ToxiGuard — Aide décisionnelle en toxicologie d'urgence
+© 2026 Dr Thomas Gourdon & Claude (Anthropic). Tous droits réservés.
 
-Copyright (c) 2026 Dr Thomas Gourdon (médecin urgentiste)
-                  Claude AI (Anthropic)
+Cette œuvre est mise à disposition selon les termes de la licence
+Creative Commons Attribution - Pas d'Utilisation Commerciale -
+Partage dans les Mêmes Conditions 4.0 International (CC BY-NC-SA 4.0).
 
-Ce projet est mis à disposition sous licence
-Creative Commons Attribution - Pas d'Utilisation Commerciale - Partage
-dans les Mêmes Conditions 4.0 International (CC BY-NC-SA 4.0).
+Vous êtes autorisé à :
+  - Partager : copier, distribuer et communiquer l'œuvre par tous moyens et formats.
+  - Adapter : remixer, transformer et créer à partir de l'œuvre.
 
-Pour consulter le texte intégral de la licence, voir :
+Selon les conditions suivantes :
+  - Attribution (BY) : vous devez créditer l'œuvre, intégrer un lien vers la
+    licence et indiquer si des modifications ont été effectuées.
+  - Pas d'Utilisation Commerciale (NC) : vous n'êtes pas autorisé à faire un
+    usage commercial de cette œuvre, de tout ou partie du matériel la composant.
+  - Partage dans les Mêmes Conditions (SA) : dans le cas où vous effectuez un
+    remix, que vous transformez, ou créez à partir du matériel composant l'œuvre
+    originale, vous devez diffuser l'œuvre modifiée dans les mêmes conditions,
+    c'est-à-dire avec la même licence.
+
+Texte complet de la licence :
+https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.fr
+
+Résumé explicatif :
 https://creativecommons.org/licenses/by-nc-sa/4.0/deed.fr
 
-Résumé des conditions :
-
-  ATTRIBUTION (BY)
-  Vous devez créditer les auteurs originaux (Dr Thomas Gourdon et Claude AI),
-  indiquer si des modifications ont été apportées et inclure un lien vers
-  la licence.
-
-  PAS D'UTILISATION COMMERCIALE (NC)
-  Vous n'êtes pas autorisé à faire un usage commercial de ce projet,
-  ni de tout ou partie du matériel le composant.
-
-  PARTAGE DANS LES MÊMES CONDITIONS (SA)
-  Dans le cas où vous remixez, transformez, ou créez à partir du
-  matériel composant cet projet, vous devez diffuser votre contribution
-  sous la même licence que l'original.
-
-Pour tout usage commercial, contactez les auteurs.
-
-AVERTISSEMENT MÉDICAL :
-ToxiGuard est un outil pédagogique d'aide à la décision destiné aux
-professionnels de santé. Il ne remplace ni l'évaluation clinique d'un
-médecin, ni l'avis du Centre Antipoison (CAPTV), ni les recommandations
-officielles (SFMU, SRLF, ANSES, HAS). L'utilisateur reste seul
-responsable de toute décision diagnostique ou thérapeutique. Les
-auteurs déclinent toute responsabilité quant à l'usage clinique de
-cet outil.
+------------------------------------------------------------------------
+AVERTISSEMENT MÉDICAL
+Outil pédagogique d'aide à la décision destiné aux professionnels de santé.
+Ne remplace ni l'évaluation clinique, ni l'avis du Centre Antipoison (CAPTV),
+ni les recommandations officielles. L'utilisateur reste seul responsable de
+toute décision diagnostique ou thérapeutique.
+------------------------------------------------------------------------

@@ -1,79 +1,70 @@
-/*
- * ============================================================================
- * ToxiGuard — Service Worker (PWA offline)
- * Version 4.8 — mai 2026
- * ============================================================================
- * © 2026 Dr Thomas Gourdon (médecin urgentiste) & Claude AI (Anthropic)
- * Licence : Creative Commons BY-NC-SA 4.0
- * https://creativecommons.org/licenses/by-nc-sa/4.0/deed.fr
- * ============================================================================
- * Stratégie : cache-first avec stale-while-revalidate
- * Change CACHE_VERSION pour forcer un refresh chez les utilisateurs.
- * ============================================================================
+/* ToxiGuard — Service Worker
+ * Offline-first pour une app monopage. Stratégie :
+ *  - navigations (HTML) : réseau d'abord, repli sur le cache (les mises à jour Vercel apparaissent vite)
+ *  - autres ressources même origine : cache d'abord, repli réseau
+ *  - cross-origin : réseau direct (pas de mise en cache des réponses opaques)
+ * Incrémenter CACHE_VERSION à chaque déploiement force le rafraîchissement du cache.
  */
-const CACHE_VERSION = 'toxiguard-v4.8.0';
+const CACHE_VERSION = 'toxiguard-v1';
 const CORE_ASSETS = [
   './',
   './index.html',
-  './manifest.webmanifest'
+  './manifest.webmanifest',
+  './icon.svg',
+  './icon-192.png',
+  './icon-512.png'
 ];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_VERSION).then((cache) => {
-      return Promise.all(
-        CORE_ASSETS.map((url) =>
-          cache.add(url).catch((err) => console.warn('[SW] precache skip:', url, err))
-        )
-      );
-    }).then(() => self.skipWaiting())
+    caches.open(CACHE_VERSION).then((cache) => cache.addAll(CORE_ASSETS))
   );
 });
 
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then((keys) =>
-      Promise.all(
-        keys.filter((k) => k !== CACHE_VERSION && k.startsWith('toxiguard-')).map((k) => caches.delete(k))
-      )
-    ).then(() => self.clients.claim())
+    caches.keys()
+      .then((keys) => Promise.all(
+        keys.filter((k) => k !== CACHE_VERSION).map((k) => caches.delete(k))
+      ))
+      .then(() => self.clients.claim())
   );
+});
+
+// Permet au bouton "Nouvelle version disponible" d'activer le SW en attente.
+self.addEventListener('message', (event) => {
+  if (event.data === 'SKIP_WAITING') self.skipWaiting();
 });
 
 self.addEventListener('fetch', (event) => {
   const req = event.request;
   if (req.method !== 'GET') return;
+
   const url = new URL(req.url);
-  const sameOrigin = url.origin === self.location.origin;
-  const isFonts = url.host === 'fonts.googleapis.com' || url.host === 'fonts.gstatic.com';
-  if (!sameOrigin && !isFonts) return;
+  if (url.origin !== self.location.origin) return; // cross-origin : laisser passer
 
+  // Navigations : réseau d'abord
+  if (req.mode === 'navigate') {
+    event.respondWith(
+      fetch(req)
+        .then((res) => {
+          const copy = res.clone();
+          caches.open(CACHE_VERSION).then((c) => c.put('./index.html', copy));
+          return res;
+        })
+        .catch(() => caches.match('./index.html').then((r) => r || caches.match('./')))
+    );
+    return;
+  }
+
+  // Autres ressources : cache d'abord
   event.respondWith(
-    caches.match(req).then((cached) => {
-      if (cached) {
-        fetch(req).then((fresh) => {
-          if (fresh && fresh.ok) {
-            caches.open(CACHE_VERSION).then((cache) => cache.put(req, fresh.clone()));
-          }
-        }).catch(() => {});
-        return cached;
+    caches.match(req).then((cached) => cached || fetch(req).then((res) => {
+      if (res && res.status === 200 && res.type === 'basic') {
+        const copy = res.clone();
+        caches.open(CACHE_VERSION).then((c) => c.put(req, copy));
       }
-      return fetch(req).then((resp) => {
-        if (resp && resp.ok) {
-          const copy = resp.clone();
-          caches.open(CACHE_VERSION).then((cache) => cache.put(req, copy)).catch(() => {});
-        }
-        return resp;
-      }).catch(() => {
-        if (req.mode === 'navigate' || req.destination === 'document') {
-          return caches.match('./index.html');
-        }
-        return new Response('Offline', { status: 503, statusText: 'Offline' });
-      });
-    })
+      return res;
+    }))
   );
-});
-
-self.addEventListener('message', (event) => {
-  if (event.data === 'SKIP_WAITING') self.skipWaiting();
 });
